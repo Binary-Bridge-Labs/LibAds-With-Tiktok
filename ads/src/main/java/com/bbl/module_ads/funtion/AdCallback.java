@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 
 import com.bbl.module_ads.ads.wrapper.ApInterstitialAd;
 import com.bbl.module_ads.ads.wrapper.ApNativeAd;
+import com.bbl.module_ads.ads.wrapper.ApRewardItem;
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdValue;
 import com.google.android.gms.ads.LoadAdError;
@@ -118,6 +119,10 @@ public class AdCallback {
     }
 
     public void onAdPriorityFailedToShow(@Nullable AdError adError) {
+
+    }
+
+    public void onUserEarnedReward(@NonNull ApRewardItem rewardItem) {
 
     }
 

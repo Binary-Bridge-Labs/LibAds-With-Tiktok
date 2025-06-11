@@ -29,9 +29,12 @@ import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
 import com.bbl.module_ads.admob.Admob;
 import com.bbl.module_ads.admob.AppOpenManager;
+import com.bbl.module_ads.ads.wrapper.ApAdError;
 import com.bbl.module_ads.ads.wrapper.ApInterstitialAd;
 import com.bbl.module_ads.ads.wrapper.ApInterstitialPriorityAd;
 import com.bbl.module_ads.ads.wrapper.ApNativeAd;
+import com.bbl.module_ads.ads.wrapper.ApRewardAd;
+import com.bbl.module_ads.ads.wrapper.ApRewardItem;
 import com.bbl.module_ads.config.BBLAdConfig;
 import com.bbl.module_ads.event.BBLAdjust;
 import com.bbl.module_ads.funtion.AdCallback;
@@ -48,6 +51,7 @@ import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.ads.nativead.NativeAdView;
+import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd;
 
@@ -499,6 +503,76 @@ public class BBLAd {
         adPlaceHolder.removeAllViews();
         adPlaceHolder.addView(adView);
     }
+
+    public ApRewardAd getRewardAd(Activity activity, String id) {
+        ApRewardAd apRewardAd = new ApRewardAd();
+        Admob.getInstance().initRewardAds(activity, id, new AdCallback() {
+            @Override
+            public void onRewardAdLoaded(RewardedAd rewardedAd) {
+                super.onRewardAdLoaded(rewardedAd);
+                Log.i(TAG, "getRewardAd AdLoaded: ");
+                apRewardAd.setAdmobReward(rewardedAd);
+            }
+        });
+
+        return apRewardAd;
+    }
+
+
+    public void forceShowRewardAd(Activity activity, ApRewardAd apRewardAd, AdCallback
+            callback) {
+        if (!apRewardAd.isReady()) {
+            Log.e(TAG, "forceShowRewardAd fail: reward ad not ready");
+            callback.onNextAction();
+            return;
+        }
+
+
+        Admob.getInstance().showRewardAds(activity, apRewardAd.getAdmobReward(), new RewardCallback() {
+
+            @Override
+            public void onUserEarnedReward(RewardItem var1) {
+                callback.onUserEarnedReward(new ApRewardItem(var1));
+            }
+
+            @Override
+            public void onRewardedAdClosed() {
+                apRewardAd.clean();
+                callback.onNextAction();
+            }
+
+            @Override
+            public void onRewardedAdFailedToShow(int codeError) {
+                apRewardAd.clean();
+                callback.onAdFailedToShow(new AdError(codeError, "note msg", "Reward"));
+            }
+
+            @Override
+            public void onAdClicked() {
+                if (callback != null) {
+                    callback.onAdClicked();
+                }
+            }
+
+            @Override
+            public void onAdClicked(String adUnitId, String mediationAdapterClassName, AdType adType) {
+
+            }
+
+            @Override
+            public void onAdImpression() {
+
+            }
+
+            @Override
+            public void onAdLogRev(AdValue adValue, String adUnitId, String mediationAdapterClassName, AdType adType) {
+
+            }
+        });
+
+
+
+}
 
     public void initRewardAds(Context context, String id, RewardCallback callback) {
         Admob.getInstance().initRewardAds(context, id, callback);

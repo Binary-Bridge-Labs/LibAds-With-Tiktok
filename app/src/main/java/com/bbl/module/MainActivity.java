@@ -14,6 +14,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bbl.module_ads.ads.BBLAd;
 import com.bbl.module_ads.ads.wrapper.ApInterstitialAd;
 import com.bbl.module_ads.ads.wrapper.ApNativeAd;
+import com.bbl.module_ads.ads.wrapper.ApRewardAd;
+import com.bbl.module_ads.ads.wrapper.ApRewardItem;
 import com.bbl.module_ads.billing.AppPurchase;
 import com.bbl.module_ads.funtion.AdCallback;
 import com.bbl.module_ads.funtion.AdType;
@@ -34,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private FrameLayout frAds;
     private ShimmerFrameLayout shimmerAds;
     private ApNativeAd mApNativeAd;
-    private RewardedAd rewardedAds;
+    private ApRewardAd rewardedAds;
     private boolean isEarn = false;
 
     @Override
@@ -156,34 +158,14 @@ public class MainActivity extends AppCompatActivity {
 
         // Reward Ads
         btnLoadReward.setOnClickListener(v -> {
-            BBLAd.getInstance().initRewardAds(this, BuildConfig.ad_reward, new AdCallback() {
-                @Override
-                public void onRewardAdLoaded(RewardedAd rewardedAd) {
-                    super.onRewardAdLoaded(rewardedAd);
-                    rewardedAds = rewardedAd;
-                    Toast.makeText(MainActivity.this, "Ads Ready", Toast.LENGTH_SHORT).show();
-                }
-            });
-        });
+            rewardedAds =         BBLAd.getInstance().getRewardAd(this, BuildConfig.ad_reward);});
 
         btnShowReward.setOnClickListener(v -> {
             isEarn = false;
-            BBLAd.getInstance().showRewardAds(MainActivity.this, rewardedAds, new RewardCallback() {
+            BBLAd.getInstance().forceShowRewardAd(MainActivity.this, rewardedAds, new AdCallback() {
                 @Override
-                public void onUserEarnedReward(RewardItem var1) {
-                    isEarn = true;
-                }
-
-                @Override
-                public void onRewardedAdClosed() {
-                    if (isEarn) {
-                        // action intent
-                    }
-                }
-
-                @Override
-                public void onRewardedAdFailedToShow(int codeError) {
-
+                public void onUserEarnedReward(@NonNull ApRewardItem rewardItem) {
+                    super.onUserEarnedReward(rewardItem);
                 }
 
                 @Override
