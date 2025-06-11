@@ -168,45 +168,48 @@ if (mApNativeAd != null) {
 ~~~
 # Reward: Load
 ~~~
-private RewardedAd rewardedAds;
-BBLAd.getInstance().initRewardAds(this, BuildConfig.ad_reward, new AdCallback() {
-                @Override
-                public void onRewardAdLoaded(RewardedAd rewardedAd) {
-                    super.onRewardAdLoaded(rewardedAd);
-                    rewardedAds = rewardedAd;
-                    Toast.makeText(MainActivity.this, "Ads Ready", Toast.LENGTH_SHORT).show();
-                }
-            });
+private ApRewardAd rewardedAds;
+btnLoadReward.setOnClickListener(v -> {
+    rewardedAds = BBLAd.getInstance().getRewardAd(this, BuildConfig.ad_reward);
+});
 ~~~
 # Reward: Show
 ~~~
 private boolean isEarn = false;
 btnShowReward.setOnClickListener(v -> {
-            isEarn = false;
-            BBLAd.getInstance().showRewardAds(MainActivity.this, rewardedAds, new RewardCallback() {
-                @Override
-                public void onUserEarnedReward(RewardItem var1) {
-                    isEarn = true;
-                }
+    isEarn = false;
+    BBLAd.getInstance().forceShowRewardAd(MainActivity.this, rewardedAds, new AdCallback() {
+        @Override
+        public void onUserEarnedReward(@NonNull ApRewardItem rewardItem) {
+            super.onUserEarnedReward(rewardItem);
+            isEarn = true;
+        }
 
-                @Override
-                public void onRewardedAdClosed() {
-                    if (isEarn) {
-                        // action intent
-                    }
-                }
+        @Override
+        public void onAdClicked() {
+            // Handle ad clicked
+        }
 
-                @Override
-                public void onRewardedAdFailedToShow(int codeError) {
+        @Override
+        public void onAdImpression() {
+            // Handle ad impression
+        }
 
-                }
+        @Override
+        public void onAdClosed() {
+            super.onAdClosed();
+            if (isEarn) {
+                // action intent - user earned reward
+            }
+        }
 
-                @Override
-                public void onAdClicked() {
-
-                }
-            });
-        });
+        @Override
+        public void onAdFailedToShow(@Nullable AdError adError) {
+            super.onAdFailedToShow(adError);
+            // Handle failed to show
+        }
+    });
+});
 ~~~
 
 # In-App Purchase
