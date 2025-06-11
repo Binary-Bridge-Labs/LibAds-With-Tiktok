@@ -12,7 +12,7 @@
         maven {
             url 'https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea'
         }
-    implementation 'com.github.chinhvq:LibAds-Tiktok:$version'
+    implementation 'com.github.chinhvq:LibAds-With-Tiktok:$version'
     implementation 'com.google.android.play:core:1.10.3'
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     implementation 'com.google.android.gms:play-services-ads:21.4.0'
