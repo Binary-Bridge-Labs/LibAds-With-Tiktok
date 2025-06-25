@@ -132,4 +132,7 @@ public class AdCallback {
 
     public void onAdClicked(String adUnitId, String mediationAdapterClassName, AdType adType) {
     }
+
+    public void onTimeOutInterSplash() {
+    }
 }

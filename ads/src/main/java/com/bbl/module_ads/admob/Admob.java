@@ -321,6 +321,7 @@ public class Admob {
                 }
                 if (adListener != null) {
                     adListener.onNextAction();
+                    adListener.onTimeOutInterSplash();
                     isShowLoadingSplash = false;
                 }
             };

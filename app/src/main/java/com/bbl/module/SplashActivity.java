@@ -26,6 +26,20 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void onNextAction() {
                 super.onNextAction();
+
+            }
+
+            @Override
+            public void onTimeOutInterSplash() {
+                super.onTimeOutInterSplash();
+                Log.d("LuanDev", "onTimeOutInterSplash: 111");
+                startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                finish();
+            }
+
+            @Override
+            public void onAdClosed() {
+                super.onAdClosed();
                 startActivity(new Intent(SplashActivity.this, MainActivity.class));
                 finish();
             }
