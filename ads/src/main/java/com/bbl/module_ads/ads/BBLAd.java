@@ -29,7 +29,6 @@ import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
 import com.bbl.module_ads.admob.Admob;
 import com.bbl.module_ads.admob.AppOpenManager;
-import com.bbl.module_ads.ads.wrapper.ApAdError;
 import com.bbl.module_ads.ads.wrapper.ApInterstitialAd;
 import com.bbl.module_ads.ads.wrapper.ApInterstitialPriorityAd;
 import com.bbl.module_ads.ads.wrapper.ApNativeAd;
@@ -566,7 +565,9 @@ public class BBLAd {
 
             @Override
             public void onAdLogRev(AdValue adValue, String adUnitId, String mediationAdapterClassName, AdType adType) {
-
+               if (callback != null){
+                   callback.onAdLogRev(adValue, adUnitId, mediationAdapterClassName, adType);
+               }
             }
         });
 

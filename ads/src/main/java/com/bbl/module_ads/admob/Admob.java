@@ -380,7 +380,6 @@ public class Admob {
 
     public void onShowSplash(AppCompatActivity activity, AdCallback adListener) {
         isShowLoadingSplash = true;
-
         if (mInterstitialSplash == null) {
             adListener.onNextAction();
             return;
