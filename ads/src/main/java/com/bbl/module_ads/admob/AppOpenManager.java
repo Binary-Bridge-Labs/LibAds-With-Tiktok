@@ -257,6 +257,8 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks, L
                     }
 
 
+
+
                 };
         if (currentActivity != null) {
             if (AppPurchase.getInstance().isPurchased(currentActivity))

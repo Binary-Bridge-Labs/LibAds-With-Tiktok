@@ -370,6 +370,7 @@ public class BBLAd {
             public void onAdClicked() {
                 super.onAdClicked();
                 callback.onAdClicked();
+                BBLAdjust.pushTrackEventCLick(adValueAds);
             }
 
             @Override
@@ -378,10 +379,13 @@ public class BBLAd {
                 callback.onAdClicked(adUnitId, mediationAdapterClassName, adType);
             }
 
+            AdValue adValueAds = null;
+
             @Override
             public void onAdLogRev(AdValue adValue, String adUnitId, String mediationAdapterClassName, AdType adType) {
                 super.onAdLogRev(adValue, adUnitId, mediationAdapterClassName, adType);
                 callback.onAdLogRev(adValue, adUnitId, mediationAdapterClassName, adType);
+                adValueAds = adValue;
             }
 
             @Override
@@ -424,18 +428,22 @@ public class BBLAd {
             public void onAdClicked() {
                 super.onAdClicked();
                 callback.onAdClicked();
+                BBLAdjust.pushTrackEventCLick(adValueAds);
             }
 
+            AdValue adValueAds = null;
             @Override
             public void onAdLogRev(AdValue adValue, String adUnitId, String mediationAdapterClassName, AdType adType) {
                 super.onAdLogRev(adValue, adUnitId, mediationAdapterClassName, adType);
                 callback.onAdLogRev(adValue, adUnitId, mediationAdapterClassName, adType);
+                adValueAds = adValue;
             }
 
             @Override
             public void onAdClicked(String adUnitId, String mediationAdapterClassName, AdType adType) {
                 super.onAdClicked(adUnitId, mediationAdapterClassName, adType);
                 callback.onAdClicked(adUnitId, mediationAdapterClassName, adType);
+
             }
         });
     }
@@ -473,12 +481,16 @@ public class BBLAd {
             public void onAdClicked() {
                 super.onAdClicked();
                 callback.onAdClicked();
+                BBLAdjust.pushTrackEventCLick(adValueAds);
             }
+
+            AdValue adValueAds = null;
 
             @Override
             public void onAdLogRev(AdValue adValue, String adUnitId, String mediationAdapterClassName, AdType adType) {
                 super.onAdLogRev(adValue, adUnitId, mediationAdapterClassName, adType);
                 callback.onAdLogRev(adValue, adUnitId, mediationAdapterClassName, adType);
+                adValueAds = adValue;
             }
 
             @Override
@@ -551,7 +563,11 @@ public class BBLAd {
                 if (callback != null) {
                     callback.onAdClicked();
                 }
+                BBLAdjust.pushTrackEventCLick(adValueAds);
             }
+
+            AdValue adValueAds = null;
+
 
             @Override
             public void onAdClicked(String adUnitId, String mediationAdapterClassName, AdType adType) {
@@ -567,6 +583,7 @@ public class BBLAd {
             public void onAdLogRev(AdValue adValue, String adUnitId, String mediationAdapterClassName, AdType adType) {
                if (callback != null){
                    callback.onAdLogRev(adValue, adUnitId, mediationAdapterClassName, adType);
+                   adValueAds = adValue;
                }
             }
         });
@@ -868,6 +885,7 @@ public class BBLAd {
             public void onAdClicked() {
                 super.onAdClicked();
                 adCallback.onAdClicked();
+                BBLAdjust.pushTrackEventCLick(adValueAds);
             }
 
             @Override
@@ -876,10 +894,13 @@ public class BBLAd {
                 adCallback.onAdClicked(adUnitId, mediationAdapterClassName, adType);
             }
 
+            AdValue adValueAds = null;
             @Override
             public void onAdLogRev(AdValue adValue, String adUnitId, String mediationAdapterClassName, AdType adType) {
                 super.onAdLogRev(adValue, adUnitId, mediationAdapterClassName, adType);
                 adCallback.onAdLogRev(adValue, adUnitId, mediationAdapterClassName, adType);
+                adValueAds = adValue;
+
             }
 
             @Override

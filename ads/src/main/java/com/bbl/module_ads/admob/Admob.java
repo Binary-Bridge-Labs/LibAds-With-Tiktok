@@ -31,6 +31,7 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 import com.bbl.module_ads.R;
 import com.bbl.module_ads.billing.AppPurchase;
 import com.bbl.module_ads.dialog.PrepareLoadingAdsDialog;
+import com.bbl.module_ads.event.BBLAdjust;
 import com.bbl.module_ads.event.BBLLogEventManager;
 import com.bbl.module_ads.funtion.AdCallback;
 import com.bbl.module_ads.funtion.AdType;
@@ -145,7 +146,10 @@ public class Admob {
                 }
             }
         });
-        MobileAds.setRequestConfiguration(new RequestConfiguration.Builder().setTestDeviceIds(testDeviceList).build());
+        RequestConfiguration configuration = new RequestConfiguration.Builder().setTestDeviceIds(testDeviceList) // ID thiết bị test
+                .build();
+
+        MobileAds.setRequestConfiguration(configuration);
 
         this.tokenAdjust = tokenAdjust;
         this.context = context;
@@ -458,6 +462,7 @@ public class Admob {
 
                 adListener.onAdClicked(mInterstitialSplash.getAdUnitId(), mInterstitialSplash.getResponseInfo().getMediationAdapterClassName(), AdType.INTERSTITIAL);
             }
+
 
             @Override
             public void onAdImpression() {
@@ -1008,6 +1013,8 @@ public class Admob {
                                     adView.getAdUnitId(),
                                     adView.getResponseInfo()
                                             .getMediationAdapterClassName(), AdType.BANNER);
+
+                            adsValue = adValue;
                             if (tokenAdjust != null) {
                                 BBLLogEventManager.logPaidAdjustWithToken(adValue, adView.getAdUnitId(), tokenAdjust);
                             }
@@ -1023,6 +1030,8 @@ public class Admob {
                     }
                 }
 
+                AdValue adsValue = null;
+
                 @Override
                 public void onAdClicked() {
                     super.onAdClicked();
@@ -1037,7 +1046,12 @@ public class Admob {
                     if (callback != null) {
                         callback.onAdClicked(id, adView.getResponseInfo().getMediationAdapterClassName(), AdType.BANNER);
                     }
+
+                    if (adsValue != null) {
+                        BBLAdjust.pushTrackEventCLick(adsValue);
+                    }
                 }
+
 
                 @Override
                 public void onAdImpression() {
@@ -1085,6 +1099,8 @@ public class Admob {
                     }
                 }
 
+                AdValue adsValue = null;
+
                 @Override
                 public void onAdLoaded() {
                     Log.d(TAG, "Banner adapter class name: " + adView.getResponseInfo().getMediationAdapterClassName());
@@ -1124,6 +1140,10 @@ public class Admob {
 
                     if (callback != null) {
                         callback.onAdClicked(id, adView.getResponseInfo().getMediationAdapterClassName(), AdType.BANNER);
+                    }
+
+                    if (adsValue != null) {
+                        BBLAdjust.pushTrackEventCLick(adsValue);
                     }
                 }
 
@@ -1171,6 +1191,7 @@ public class Admob {
                     }
                 }
 
+                AdValue adsValue = null;
                 @Override
                 public void onAdLoaded() {
                     Log.d(TAG, "Banner adapter class name: " + adView.getResponseInfo().getMediationAdapterClassName());
@@ -1188,7 +1209,7 @@ public class Admob {
                         if (tokenAdjust != null) {
                             BBLLogEventManager.logPaidAdjustWithToken(adValue, adView.getAdUnitId(), tokenAdjust);
                         }
-
+                        adsValue = adValue;
                         if (callback != null) {
                             callback.onAdLogRev(adValue, adView.getAdUnitId(), adView.getResponseInfo().getMediationAdapterClassName(), AdType.BANNER);
                         }
@@ -1210,6 +1231,10 @@ public class Admob {
 
                     if (callback != null) {
                         callback.onAdClicked(id, adView.getResponseInfo().getMediationAdapterClassName(), AdType.BANNER);
+                    }
+
+                    if (adsValue != null) {
+                        BBLAdjust.pushTrackEventCLick(adsValue);
                     }
                 }
 

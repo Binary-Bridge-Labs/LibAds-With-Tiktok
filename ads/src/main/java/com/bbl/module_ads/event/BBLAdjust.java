@@ -57,6 +57,14 @@ public class BBLAdjust {
         }
     }
 
+    public static void pushTrackEventCLick(AdValue adValue) {
+        if (BBLAdjust.enableAdjust) {
+            AdjustAdRevenue adRevenue = new AdjustAdRevenue("click_ads_revenue");
+            adRevenue.setRevenue(adValue.getValueMicros() / 1000000.0, adValue.getCurrencyCode());
+            Adjust.trackAdRevenue(adRevenue);
+        }
+    }
+
     public static void pushTrackEventApplovin(MaxAd ad, Context context) {
         if (BBLAdjust.enableAdjust) {
             AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX);

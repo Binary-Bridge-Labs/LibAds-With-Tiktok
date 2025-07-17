@@ -116,6 +116,18 @@ public class BBLLogEventManager {
         FacebookEventUtils.logClickAdsEvent(context, bundle);
     }
 
+    public static void trackingAdsClick(Context context, AdValue adValue) {
+        float adsRev = adValue.getValueMicros() / 1_000_000f;
+        String currencyCode = adValue.getCurrencyCode() != null ? adValue.getCurrencyCode() : "USD";
+
+        Bundle bundle = new Bundle();
+        bundle.putDouble(FirebaseAnalytics.Param.VALUE, adsRev); // float tự chuyển sang double
+        bundle.putString(FirebaseAnalytics.Param.CURRENCY, currencyCode);
+
+        FirebaseAnalytics.getInstance(context).logEvent("click_ads_tracking", bundle);
+    }
+
+
     public static void logCurrentTotalRevenueAd(Context context, String eventName) {
         float currentTotalRevenue = SharePreferenceUtils.getCurrentTotalRevenueAd(context);
         Bundle bundle = new Bundle();

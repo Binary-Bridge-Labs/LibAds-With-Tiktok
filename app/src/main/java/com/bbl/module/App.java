@@ -29,7 +29,9 @@ public class App extends AdsMultiDexApplication {
         mBBLAdConfig.setAdjustConfig(adjustConfig);
         mBBLAdConfig.setFacebookClientToken(getString(R.string.facebook_client_token));
         mBBLAdConfig.setAdjustTokenTiktok(getString(R.string.tiktok_token));
-
+        ArrayList<String> listDevices = new ArrayList<>();
+        listDevices.add("C20CB584D5F3884F6EEEC91B0FF540A2");
+        mBBLAdConfig.setListDeviceTest(listDevices);
         mBBLAdConfig.setIdAdResume("");
 
         BBLAd.getInstance().init(this, mBBLAdConfig);

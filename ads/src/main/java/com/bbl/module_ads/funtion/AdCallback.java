@@ -1,5 +1,7 @@
 package com.bbl.module_ads.funtion;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -131,6 +133,10 @@ public class AdCallback {
     }
 
     public void onAdClicked(String adUnitId, String mediationAdapterClassName, AdType adType) {
+    }
+
+    public void onTrackingClickAds(Context context, AdValue adValue){
+
     }
 
     public void onTimeOutInterSplash() {
