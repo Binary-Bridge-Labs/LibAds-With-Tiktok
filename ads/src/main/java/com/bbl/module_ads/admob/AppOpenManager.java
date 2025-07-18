@@ -271,7 +271,7 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks, L
         AdRequest request = getAdRequest();
         AppOpenAd.load(
                 myApplication, isSplash ? splashAdId : appResumeAdId, request,
-                AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT, loadCallback);
+                loadCallback);
     }
 
     @SuppressLint("MissingPermission")
@@ -1167,7 +1167,7 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks, L
         AdRequest request = getAdRequest();
         AppOpenAd.load(
                 myApplication, splashAdId, request,
-                AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT, loadCallback);
+                loadCallback);
 
         if (splashTimeout > 0) {
             timeoutHandler = new Handler();
