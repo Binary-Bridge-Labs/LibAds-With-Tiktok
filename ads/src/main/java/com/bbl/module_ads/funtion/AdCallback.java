@@ -92,6 +92,10 @@ public class AdCallback {
 
     }
 
+    public void onNativeAdLoaded( ApNativeAd nativeAd,  ApNativeAd nativeHighAd) {
+
+    }
+
     public void onInterstitialShow() {
 
     }

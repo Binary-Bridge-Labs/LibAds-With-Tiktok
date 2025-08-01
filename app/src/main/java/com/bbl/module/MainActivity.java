@@ -20,15 +20,10 @@ import com.bbl.module_ads.billing.AppPurchase;
 import com.bbl.module_ads.funtion.AdCallback;
 import com.bbl.module_ads.funtion.AdType;
 import com.bbl.module_ads.funtion.PurchaseListener;
-import com.bbl.module_ads.funtion.RewardCallback;
 import com.facebook.shimmer.ShimmerFrameLayout;
-import com.bbl.module.BuildConfig;
-import com.bbl.module.R;
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdValue;
 import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.rewarded.RewardItem;
-import com.google.android.gms.ads.rewarded.RewardedAd;
 
 public class MainActivity extends AppCompatActivity {
     private ApInterstitialAd mInterstitialAd;
@@ -93,27 +88,64 @@ public class MainActivity extends AppCompatActivity {
         /*BBLAd.getInstance().loadCollapsibleBanner(this, BuildConfig.ad_banner, AppConstant.CollapsibleGravity.BOTTOM, new AdCallback());*/
 
         // Native Ads: Load And Show
-        BBLAd.getInstance().loadNativeAd(this, BuildConfig.ad_native, R.layout.native_large, frAds, shimmerAds, new AdCallback() {
-            @Override
-            public void onAdFailedToLoad(@Nullable LoadAdError i) {
-                super.onAdFailedToLoad(i);
-                frAds.removeAllViews();
-            }
+//        BBLAd.getInstance().loadNativeAd(this, BuildConfig.ad_native, R.layout.native_large, frAds, shimmerAds, new AdCallback() {
+//            @Override
+//            public void onAdFailedToLoad(@Nullable LoadAdError i) {
+//                super.onAdFailedToLoad(i);
+//                frAds.removeAllViews();
+//            }
+//
+//            @Override
+//            public void onAdFailedToShow(@Nullable AdError adError) {
+//                super.onAdFailedToShow(adError);
+//                frAds.removeAllViews();
+//            }
+//        });
 
-            @Override
-            public void onAdFailedToShow(@Nullable AdError adError) {
-                super.onAdFailedToShow(adError);
-                frAds.removeAllViews();
-            }
-        });
+
+        /*
+         *
+         * loadNativeAdsWithHighTwoId
+         * */
+
+//        BBLAd.getInstance().loadNativeAdsWithHighTwoId(
+//                this,
+//                BuildConfig.ad_native,                  // id normal
+//                BuildConfig.ad_native_high_priority_1,           // id high priority 1
+//                BuildConfig.ad_native_high_priority_2,           // id high priority 2 (nếu có)
+//                R.layout.native_large,
+//                frAds,
+//                shimmerAds,
+//                new AdCallback() {
+//                    @Override
+//                    public void onNativeAdLoaded(@NonNull ApNativeAd nativeAd) {
+//                        // Ad loaded successfully, optional custom handling here
+//                    }
+//
+//                    @Override
+//                    public void onAdFailedToLoad(@Nullable LoadAdError i) {
+//                        super.onAdFailedToLoad(i);
+//                        frAds.removeAllViews();
+//                    }
+//
+//                    @Override
+//                    public void onAdFailedToShow(@Nullable AdError adError) {
+//                        super.onAdFailedToShow(adError);
+//                        frAds.removeAllViews();
+//                    }
+//                });
+
 
         // Native Ads: Load
-        BBLAd.getInstance().loadNativeAdResultCallback(this, BuildConfig.ad_native, R.layout.native_large, new AdCallback() {
+        BBLAd.getInstance().loadNativeAdResultCallback(this, BuildConfig.ad_native, BuildConfig.ad_native_high_priority_1, BuildConfig.ad_native_high_priority_2, R.layout.native_large ,frAds,
+               shimmerAds,new AdCallback() {
             @Override
             public void onNativeAdLoaded(@NonNull ApNativeAd nativeAd) {
                 super.onNativeAdLoaded(nativeAd);
 
                 mApNativeAd = nativeAd;
+                // Native Ads: Show
+                BBLAd.getInstance().populateNativeAdView(MainActivity.this, mApNativeAd, frAds, shimmerAds);
             }
 
             @Override
@@ -131,10 +163,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Native Ads: Show
-        if (mApNativeAd != null) {
-            BBLAd.getInstance().populateNativeAdView(this, mApNativeAd, frAds, shimmerAds);
-        }
+
+
 
         // In-App Purchase
         AppPurchase.getInstance().setPurchaseListener(new PurchaseListener() {

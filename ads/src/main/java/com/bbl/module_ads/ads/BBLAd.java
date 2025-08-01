@@ -501,6 +501,197 @@ public class BBLAd {
         });
     }
 
+
+    public void loadNativeAdResultCallback(final Activity activity, String idNormal, String idHighPriority1, String idHighPriority2, int layoutCustomNative, FrameLayout adPlaceHolder, ShimmerFrameLayout containerShimmerLoading, AdCallback callback) {
+        loadNativeAdsWithHighTwoIdToShow(activity, idNormal, idHighPriority1, idHighPriority2, layoutCustomNative, adPlaceHolder, containerShimmerLoading, callback);
+    }
+
+
+    public void loadNativeAdsWithHighTwoIdToShow(final Activity activity, String idNormal, String idHighPriority1, String idHighPriority2, int layoutCustomNative, FrameLayout adPlaceHolder, ShimmerFrameLayout containerShimmerLoading, AdCallback callback) {
+
+        final ApNativeAd[] nativeAdNormal = new ApNativeAd[1];
+        final ApNativeAd[] nativeAdHigh = new ApNativeAd[1];
+
+        Runnable checkAndCallback = () -> {
+            ApNativeAd adToShow = nativeAdHigh[0] != null ? nativeAdHigh[0] : nativeAdNormal[0];
+            if (adToShow != null) {
+                callback.onNativeAdLoaded(adToShow);
+                populateNativeAdView(activity, adToShow, adPlaceHolder, containerShimmerLoading);
+            }
+        };
+
+        // Load Normal Ad
+        Admob.getInstance().loadNativeAd(activity, idNormal, new AdCallback() {
+            @Override
+            public void onUnifiedNativeAdLoaded(@NonNull NativeAd unifiedNativeAd) {
+                Log.d("Zimmy9x", "onUnifiedNativeAdLoaded: Normal");
+                nativeAdNormal[0] = new ApNativeAd(layoutCustomNative, unifiedNativeAd);
+
+            }
+
+
+            @Override
+            public void onAdFailedToShowAll(@Nullable AdError adError) {
+                super.onAdFailedToShowAll(adError);
+                callback.onAdFailedToShowAll(adError);
+            }
+
+            @Override
+            public void onAdFailedToLoad(@Nullable LoadAdError error) {
+                callback.onAdFailedToLoad(error);
+            }
+        });
+
+        // Load High Priority Ad
+        Admob.getInstance().loadNativeAd(activity, idHighPriority1, new AdCallback() {
+            @Override
+            public void onUnifiedNativeAdLoaded(@NonNull NativeAd unifiedNativeAd) {
+                Log.d("Zimmy9x", "onUnifiedNativeAdLoaded: High Priority Ad 1");
+                nativeAdHigh[0] = new ApNativeAd(layoutCustomNative, unifiedNativeAd);
+                checkAndCallback.run();
+            }
+
+            @Override
+            public void onAdClickedHigh() {
+                super.onAdClickedHigh();
+                callback.onAdClickedAll();
+            }
+
+            @Override
+            public void onAdFailedToShowHigh(@Nullable AdError adError) {
+                super.onAdFailedToShowHigh(adError);
+                callback.onAdFailedToShowHigh(adError);
+            }
+
+            @Override
+            public void onAdFailedToLoad(@Nullable LoadAdError error) {
+                callback.onAdFailedToLoad(error);
+                if (idHighPriority2 != null) {
+                    Admob.getInstance().loadNativeAd(activity, idHighPriority2, new AdCallback() {
+                        @Override
+                        public void onUnifiedNativeAdLoaded(@NonNull NativeAd unifiedNativeAd) {
+                            Log.d("Zimmy9x", "onUnifiedNativeAdLoaded: High Priority Ad 2");
+                            nativeAdHigh[0] = new ApNativeAd(layoutCustomNative, unifiedNativeAd);
+                            checkAndCallback.run();
+                        }
+
+                        @Override
+                        public void onAdFailedToShowHigh(@Nullable AdError adError) {
+                            super.onAdFailedToShowHigh(adError);
+                            callback.onAdFailedToShowHigh(adError);
+                        }
+
+                        @Override
+                        public void onAdClickedAll() {
+                            super.onAdClickedAll();
+                            callback.onAdClickedAll();
+                        }
+
+                        @Override
+                        public void onAdFailedToLoad(@Nullable LoadAdError error) {
+                            callback.onAdFailedToLoad(error);
+                            checkAndCallback.run();
+                        }
+                    });
+                } else {
+                    checkAndCallback.run();
+                }
+            }
+        });
+    }
+
+
+    public void loadNativeAdsWithHighTwoId(final Activity activity, String idNormal, String idHighPriority1, String idHighPriority2, int layoutCustomNative, FrameLayout adPlaceHolder, ShimmerFrameLayout containerShimmerLoading, AdCallback callback) {
+
+        final ApNativeAd[] nativeAdNormal = new ApNativeAd[1];
+        final ApNativeAd[] nativeAdHigh = new ApNativeAd[1];
+
+        Runnable checkAndCallback = () -> {
+            ApNativeAd adToShow = nativeAdHigh[0] != null ? nativeAdHigh[0] : nativeAdNormal[0];
+            if (adToShow != null) {
+                callback.onNativeAdLoaded(adToShow);
+                populateNativeAdView(activity, adToShow, adPlaceHolder, containerShimmerLoading);
+            }
+        };
+
+        // Load Normal Ad
+        Admob.getInstance().loadNativeAd(activity, idNormal, new AdCallback() {
+            @Override
+            public void onUnifiedNativeAdLoaded(@NonNull NativeAd unifiedNativeAd) {
+                nativeAdNormal[0] = new ApNativeAd(layoutCustomNative, unifiedNativeAd);
+                checkAndCallback.run();
+            }
+
+
+            @Override
+            public void onAdFailedToShowAll(@Nullable AdError adError) {
+                super.onAdFailedToShowAll(adError);
+                callback.onAdFailedToShowAll(adError);
+            }
+
+            @Override
+            public void onAdFailedToLoad(@Nullable LoadAdError error) {
+                callback.onAdFailedToLoad(error);
+            }
+        });
+
+        // Load High Priority Ad
+        Admob.getInstance().loadNativeAd(activity, idHighPriority1, new AdCallback() {
+            @Override
+            public void onUnifiedNativeAdLoaded(@NonNull NativeAd unifiedNativeAd) {
+                nativeAdHigh[0] = new ApNativeAd(layoutCustomNative, unifiedNativeAd);
+                checkAndCallback.run();
+            }
+
+            @Override
+            public void onAdClickedHigh() {
+                super.onAdClickedHigh();
+                callback.onAdClickedAll();
+            }
+
+            @Override
+            public void onAdFailedToShowHigh(@Nullable AdError adError) {
+                super.onAdFailedToShowHigh(adError);
+                callback.onAdFailedToShowHigh(adError);
+            }
+
+            @Override
+            public void onAdFailedToLoad(@Nullable LoadAdError error) {
+                callback.onAdFailedToLoad(error);
+                if (idHighPriority2 != null) {
+                    Admob.getInstance().loadNativeAd(activity, idHighPriority2, new AdCallback() {
+                        @Override
+                        public void onUnifiedNativeAdLoaded(@NonNull NativeAd unifiedNativeAd) {
+                            nativeAdHigh[0] = new ApNativeAd(layoutCustomNative, unifiedNativeAd);
+                            checkAndCallback.run();
+                        }
+
+                        @Override
+                        public void onAdFailedToShowHigh(@Nullable AdError adError) {
+                            super.onAdFailedToShowHigh(adError);
+                            callback.onAdFailedToShowHigh(adError);
+                        }
+
+                        @Override
+                        public void onAdClickedAll() {
+                            super.onAdClickedAll();
+                            callback.onAdClickedAll();
+                        }
+
+                        @Override
+                        public void onAdFailedToLoad(@Nullable LoadAdError error) {
+                            callback.onAdFailedToLoad(error);
+                            checkAndCallback.run();
+                        }
+                    });
+                } else {
+                    checkAndCallback.run();
+                }
+            }
+        });
+    }
+
+
     public void populateNativeAdView(Activity activity, ApNativeAd apNativeAd, FrameLayout adPlaceHolder, ShimmerFrameLayout containerShimmerLoading) {
         if (apNativeAd.getAdmobNativeAd() == null && apNativeAd.getNativeView() == null) {
             containerShimmerLoading.setVisibility(View.GONE);
@@ -514,6 +705,8 @@ public class BBLAd {
         adPlaceHolder.removeAllViews();
         adPlaceHolder.addView(adView);
     }
+
+
 
     public ApRewardAd getRewardAd(Activity activity, String id) {
         ApRewardAd apRewardAd = new ApRewardAd();

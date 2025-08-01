@@ -1394,6 +1394,9 @@ public class Admob {
         adLoader.loadAd(getAdRequest());
     }
 
+
+
+
     public void loadNativeAds(Context context, String id, final AdCallback callback, int countAd) {
         AtomicReference<NativeAd> nativeAd1 = new AtomicReference<>();
         if (AppPurchase.getInstance().isPurchased(context)) {
@@ -1709,6 +1712,17 @@ public class Admob {
         adView.setPriceView(adView.findViewById(R.id.ad_price));
         adView.setStarRatingView(adView.findViewById(R.id.ad_stars));
         adView.setAdvertiserView(adView.findViewById(R.id.ad_advertiser));
+
+        try {
+            adView.findViewById(R.id.close_ads).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    adView.setVisibility(View.GONE);
+                }
+            });
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
 
         try {
             ((TextView) adView.getHeadlineView()).setText(nativeAd.getHeadline());
