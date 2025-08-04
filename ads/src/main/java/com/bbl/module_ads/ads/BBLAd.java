@@ -601,7 +601,7 @@ public class BBLAd {
     }
 
 
-    public void loadNativeAdsWithHighTwoId(final Activity activity, String idNormal, String idHighPriority1, String idHighPriority2, int layoutCustomNative, FrameLayout adPlaceHolder, ShimmerFrameLayout containerShimmerLoading, AdCallback callback) {
+    public void loadNativeAdsWithHighTwoId(final Activity activity, String idNormal, String idHighPriority1, String idHighPriority2, int layoutCustomNative, AdCallback callback) {
 
         final ApNativeAd[] nativeAdNormal = new ApNativeAd[1];
         final ApNativeAd[] nativeAdHigh = new ApNativeAd[1];
@@ -610,7 +610,7 @@ public class BBLAd {
             ApNativeAd adToShow = nativeAdHigh[0] != null ? nativeAdHigh[0] : nativeAdNormal[0];
             if (adToShow != null) {
                 callback.onNativeAdLoaded(adToShow);
-                populateNativeAdView(activity, adToShow, adPlaceHolder, containerShimmerLoading);
+
             }
         };
 
