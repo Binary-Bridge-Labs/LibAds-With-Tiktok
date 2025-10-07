@@ -279,8 +279,8 @@ public class BBLAd {
         return apInterstitialAd;
     }
 
-    public void  forceShowInterstitial(@NonNull Context context, ApInterstitialAd mInterstitialAd,
-                                       @NonNull final AdCallback callback, boolean shouldReloadAds) {
+    public void forceShowInterstitial(@NonNull Context context, ApInterstitialAd mInterstitialAd,
+                                      @NonNull final AdCallback callback, boolean shouldReloadAds) {
         if (System.currentTimeMillis() - SharePreferenceUtils.getLastImpressionInterstitialTime(context)
                 < BBLAd.getInstance().adConfig.getIntervalInterstitialAd() * 1000L
         ) {
@@ -432,6 +432,7 @@ public class BBLAd {
             }
 
             AdValue adValueAds = null;
+
             @Override
             public void onAdLogRev(AdValue adValue, String adUnitId, String mediationAdapterClassName, AdType adType) {
                 super.onAdLogRev(adValue, adUnitId, mediationAdapterClassName, adType);
@@ -444,6 +445,116 @@ public class BBLAd {
                 super.onAdClicked(adUnitId, mediationAdapterClassName, adType);
                 callback.onAdClicked(adUnitId, mediationAdapterClassName, adType);
 
+            }
+        });
+    }
+
+
+    public void loadNativeAndShowCollapse(final Activity activity, String id,
+                                          int layoutCustomNative, FrameLayout adPlaceHolder, ShimmerFrameLayout containerShimmerLoading, AdCallback callback) {
+        Admob.getInstance().loadNativeAd(((Context) activity), id, new AdCallback() {
+            @Override
+            public void onUnifiedNativeAdLoaded(@NonNull NativeAd unifiedNativeAd) {
+                super.onUnifiedNativeAdLoaded(unifiedNativeAd);
+                callback.onNativeAdLoaded(new ApNativeAd(layoutCustomNative, unifiedNativeAd));
+                populateNativeAdView(activity, new ApNativeAd(layoutCustomNative, unifiedNativeAd), adPlaceHolder, containerShimmerLoading, callback);
+            }
+
+            @Override
+            public void onAdFailedToLoad(@Nullable LoadAdError i) {
+                super.onAdFailedToLoad(i);
+                callback.onAdFailedToLoad(i);
+            }
+
+            @Override
+            public void onAdFailedToShow(@Nullable AdError adError) {
+                super.onAdFailedToShow(adError);
+                callback.onAdFailedToShow(adError);
+            }
+
+            @Override
+            public void onAdClicked() {
+                super.onAdClicked();
+                callback.onAdClicked();
+                BBLAdjust.pushTrackEventCLick(adValueAds);
+            }
+
+            AdValue adValueAds = null;
+
+            @Override
+            public void onAdLogRev(AdValue adValue, String adUnitId, String mediationAdapterClassName, AdType adType) {
+                super.onAdLogRev(adValue, adUnitId, mediationAdapterClassName, adType);
+                callback.onAdLogRev(adValue, adUnitId, mediationAdapterClassName, adType);
+                adValueAds = adValue;
+            }
+
+            @Override
+            public void onAdClicked(String adUnitId, String mediationAdapterClassName, AdType adType) {
+                super.onAdClicked(adUnitId, mediationAdapterClassName, adType);
+                callback.onAdClicked(adUnitId, mediationAdapterClassName, adType);
+
+            }
+        });
+    }
+
+
+    public void loadNativeAndShowCollapse(final Activity activity, String id,
+                                          int layoutCustomNative, FrameLayout adPlaceHolder, ShimmerFrameLayout containerShimmerLoading, String idBanner, FrameLayout frBanner, ShimmerFrameLayout sfBanner, AdCallback callback) {
+        Admob.getInstance().loadNativeAd(((Context) activity), id, new AdCallback() {
+            @Override
+            public void onUnifiedNativeAdLoaded(@NonNull NativeAd unifiedNativeAd) {
+                super.onUnifiedNativeAdLoaded(unifiedNativeAd);
+                callback.onNativeAdLoaded(new ApNativeAd(layoutCustomNative, unifiedNativeAd));
+                populateNativeAdView(activity, new ApNativeAd(layoutCustomNative, unifiedNativeAd), adPlaceHolder, containerShimmerLoading, new NativeCallBack() {
+                    @Override
+                    public void closeNativeAd() {
+                        frBanner.setVisibility(View.VISIBLE);
+                    }
+                });
+            }
+
+            @Override
+            public void onAdFailedToLoad(@Nullable LoadAdError i) {
+                super.onAdFailedToLoad(i);
+                callback.onAdFailedToLoad(i);
+            }
+
+            @Override
+            public void onAdFailedToShow(@Nullable AdError adError) {
+                super.onAdFailedToShow(adError);
+                callback.onAdFailedToShow(adError);
+            }
+
+            @Override
+            public void onAdClicked() {
+                super.onAdClicked();
+                callback.onAdClicked();
+                BBLAdjust.pushTrackEventCLick(adValueAds);
+            }
+
+            AdValue adValueAds = null;
+
+            @Override
+            public void onAdLogRev(AdValue adValue, String adUnitId, String mediationAdapterClassName, AdType adType) {
+                super.onAdLogRev(adValue, adUnitId, mediationAdapterClassName, adType);
+                callback.onAdLogRev(adValue, adUnitId, mediationAdapterClassName, adType);
+                adValueAds = adValue;
+            }
+
+            @Override
+            public void onAdClicked(String adUnitId, String mediationAdapterClassName, AdType adType) {
+                super.onAdClicked(adUnitId, mediationAdapterClassName, adType);
+                callback.onAdClicked(adUnitId, mediationAdapterClassName, adType);
+
+            }
+        });
+
+
+        loadBanner(activity, idBanner, new AdCallback() {
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+                frBanner.setVisibility(View.GONE);
             }
         });
     }
@@ -707,6 +818,37 @@ public class BBLAd {
     }
 
 
+    public void populateNativeAdView(Activity activity, ApNativeAd apNativeAd, FrameLayout adPlaceHolder, ShimmerFrameLayout containerShimmerLoading, NativeCallBack callBack) {
+        if (apNativeAd.getAdmobNativeAd() == null && apNativeAd.getNativeView() == null) {
+            containerShimmerLoading.setVisibility(View.GONE);
+            return;
+        }
+        @SuppressLint("InflateParams") NativeAdView adView = (NativeAdView) LayoutInflater.from(activity).inflate(apNativeAd.getLayoutCustomNative(), null);
+        containerShimmerLoading.stopShimmer();
+        containerShimmerLoading.setVisibility(View.GONE);
+        adPlaceHolder.setVisibility(View.VISIBLE);
+        Admob.getInstance().populateUnifiedNativeAdView(apNativeAd.getAdmobNativeAd(), adView, callBack);
+        adPlaceHolder.removeAllViews();
+        adPlaceHolder.addView(adView);
+    }
+
+
+    public void populateNativeAdView(Activity activity, ApNativeAd apNativeAd, FrameLayout adPlaceHolder, ShimmerFrameLayout containerShimmerLoading, AdCallback callBack) {
+        if (apNativeAd.getAdmobNativeAd() == null && apNativeAd.getNativeView() == null) {
+            containerShimmerLoading.setVisibility(View.GONE);
+            return;
+        }
+        @SuppressLint("InflateParams") NativeAdView adView = (NativeAdView) LayoutInflater.from(activity).inflate(apNativeAd.getLayoutCustomNative(), null);
+        containerShimmerLoading.stopShimmer();
+        containerShimmerLoading.setVisibility(View.GONE);
+        adPlaceHolder.setVisibility(View.VISIBLE);
+        Admob.getInstance().populateUnifiedNativeAdView(apNativeAd.getAdmobNativeAd(), adView, callBack);
+        adPlaceHolder.removeAllViews();
+        adPlaceHolder.addView(adView);
+    }
+
+
+
 
     public ApRewardAd getRewardAd(Activity activity, String id) {
         ApRewardAd apRewardAd = new ApRewardAd();
@@ -774,16 +916,15 @@ public class BBLAd {
 
             @Override
             public void onAdLogRev(AdValue adValue, String adUnitId, String mediationAdapterClassName, AdType adType) {
-               if (callback != null){
-                   callback.onAdLogRev(adValue, adUnitId, mediationAdapterClassName, adType);
-                   adValueAds = adValue;
-               }
+                if (callback != null) {
+                    callback.onAdLogRev(adValue, adUnitId, mediationAdapterClassName, adType);
+                    adValueAds = adValue;
+                }
             }
         });
 
 
-
-}
+    }
 
     public void initRewardAds(Context context, String id, RewardCallback callback) {
         Admob.getInstance().initRewardAds(context, id, callback);
@@ -1088,6 +1229,7 @@ public class BBLAd {
             }
 
             AdValue adValueAds = null;
+
             @Override
             public void onAdLogRev(AdValue adValue, String adUnitId, String mediationAdapterClassName, AdType adType) {
                 super.onAdLogRev(adValue, adUnitId, mediationAdapterClassName, adType);

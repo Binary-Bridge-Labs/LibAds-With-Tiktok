@@ -21,14 +21,13 @@ import com.bbl.module_ads.funtion.AdCallback;
 import com.bbl.module_ads.funtion.AdType;
 import com.bbl.module_ads.funtion.PurchaseListener;
 import com.facebook.shimmer.ShimmerFrameLayout;
-import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdValue;
-import com.google.android.gms.ads.LoadAdError;
 
 public class MainActivity extends AppCompatActivity {
     private ApInterstitialAd mInterstitialAd;
     private Button btnLoad, btnShow, btnIap, btnLoadReward, btnShowReward;
     private FrameLayout frAds;
+
     private ShimmerFrameLayout shimmerAds;
     private ApNativeAd mApNativeAd;
     private ApRewardAd rewardedAds;
@@ -46,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         btnLoadReward = findViewById(R.id.btnLoadReward);
         btnShowReward = findViewById(R.id.btnShowReward);
         frAds = findViewById(R.id.fr_ads);
+
         shimmerAds = findViewById(R.id.shimmer_native);
 
 
@@ -84,7 +84,23 @@ public class MainActivity extends AppCompatActivity {
         }, true));
 
         // Banner Ads
-        BBLAd.getInstance().loadBanner(this, BuildConfig.ad_banner);
+
+
+
+
+
+      FrameLayout frBanner = findViewById(com.bbl.module_ads.R.id.banner_container);
+      ShimmerFrameLayout sfBanner = findViewById(com.bbl.module_ads.R.id.shimmer_container_banner);
+
+
+        BBLAd.getInstance().loadNativeAndShowCollapse(this, BuildConfig.ad_native, R.layout.native_large, frAds, shimmerAds,BuildConfig.ad_banner, frBanner, sfBanner,new AdCallback() {
+            @Override
+            public void onAdClosed() {
+                super.onAdClosed();
+
+            }
+        });
+
         /*BBLAd.getInstance().loadCollapsibleBanner(this, BuildConfig.ad_banner, AppConstant.CollapsibleGravity.BOTTOM, new AdCallback());*/
 
         // Native Ads: Load And Show
@@ -137,33 +153,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Native Ads: Load
-        BBLAd.getInstance().loadNativeAdResultCallback(this, BuildConfig.ad_native, BuildConfig.ad_native_high_priority_1, BuildConfig.ad_native_high_priority_2, R.layout.native_large ,frAds,
-               shimmerAds,new AdCallback() {
-            @Override
-            public void onNativeAdLoaded(@NonNull ApNativeAd nativeAd) {
-                super.onNativeAdLoaded(nativeAd);
-
-                mApNativeAd = nativeAd;
-                // Native Ads: Show
-                BBLAd.getInstance().populateNativeAdView(MainActivity.this, mApNativeAd, frAds, shimmerAds);
-            }
-
-            @Override
-            public void onAdFailedToLoad(@Nullable LoadAdError i) {
-                super.onAdFailedToLoad(i);
-
-                mApNativeAd = null;
-            }
-
-            @Override
-            public void onAdFailedToShow(@Nullable AdError adError) {
-                super.onAdFailedToShow(adError);
-
-                mApNativeAd = null;
-            }
-        });
-
-
 
 
         // In-App Purchase
@@ -188,7 +177,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Reward Ads
         btnLoadReward.setOnClickListener(v -> {
-            rewardedAds =         BBLAd.getInstance().getRewardAd(this, BuildConfig.ad_reward);});
+            rewardedAds = BBLAd.getInstance().getRewardAd(this, BuildConfig.ad_reward);
+        });
 
         btnShowReward.setOnClickListener(v -> {
             isEarn = false;

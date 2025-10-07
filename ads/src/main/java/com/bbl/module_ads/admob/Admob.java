@@ -29,6 +29,7 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
 import com.bbl.module_ads.R;
+import com.bbl.module_ads.ads.NativeCallBack;
 import com.bbl.module_ads.billing.AppPurchase;
 import com.bbl.module_ads.dialog.PrepareLoadingAdsDialog;
 import com.bbl.module_ads.event.BBLAdjust;
@@ -1505,7 +1506,12 @@ public class Admob {
 
                         nativeAd1.set(nativeAd);
                     });
-                    populateUnifiedNativeAdView(nativeAd, adView);
+                    populateUnifiedNativeAdView(nativeAd, adView, new NativeCallBack() {
+                        @Override
+                        public void closeNativeAd() {
+                            callback.onAdClosed();
+                        }
+                    });
                     frameLayout.removeAllViews();
                     frameLayout.addView(adView);
                 })
@@ -1718,6 +1724,212 @@ public class Admob {
                 @Override
                 public void onClick(View v) {
                     adView.setVisibility(View.GONE);
+                }
+            });
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            ((TextView) adView.getHeadlineView()).setText(nativeAd.getHeadline());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            if (nativeAd.getBody() == null) {
+                adView.getBodyView().setVisibility(View.INVISIBLE);
+            } else {
+                adView.getBodyView().setVisibility(View.VISIBLE);
+                ((TextView) adView.getBodyView()).setText(nativeAd.getBody());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            if (nativeAd.getCallToAction() == null) {
+                Objects.requireNonNull(adView.getCallToActionView()).setVisibility(View.INVISIBLE);
+            } else {
+                Objects.requireNonNull(adView.getCallToActionView()).setVisibility(View.VISIBLE);
+                ((TextView) adView.getCallToActionView()).setText(nativeAd.getCallToAction());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            if (nativeAd.getIcon() == null) {
+                Objects.requireNonNull(adView.getIconView()).setVisibility(View.GONE);
+            } else {
+                ((ImageView) adView.getIconView()).setImageDrawable(
+                        nativeAd.getIcon().getDrawable());
+                adView.getIconView().setVisibility(View.VISIBLE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            if (nativeAd.getPrice() == null) {
+                Objects.requireNonNull(adView.getPriceView()).setVisibility(View.INVISIBLE);
+            } else {
+                Objects.requireNonNull(adView.getPriceView()).setVisibility(View.VISIBLE);
+                ((TextView) adView.getPriceView()).setText(nativeAd.getPrice());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            if (nativeAd.getStarRating() == null) {
+                Objects.requireNonNull(adView.getStarRatingView()).setVisibility(View.INVISIBLE);
+            } else {
+                ((RatingBar) Objects.requireNonNull(adView.getStarRatingView())).setRating(nativeAd.getStarRating().floatValue());
+                adView.getStarRatingView().setVisibility(View.VISIBLE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            if (nativeAd.getAdvertiser() == null) {
+                adView.getAdvertiserView().setVisibility(View.INVISIBLE);
+            } else {
+                ((TextView) adView.getAdvertiserView()).setText(nativeAd.getAdvertiser());
+                adView.getAdvertiserView().setVisibility(View.VISIBLE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        adView.setNativeAd(nativeAd);
+
+    }
+
+
+
+
+    public void populateUnifiedNativeAdView(NativeAd nativeAd, NativeAdView adView, NativeCallBack nativeCallBack) {
+        adView.setMediaView(adView.findViewById(R.id.ad_media));
+        adView.setHeadlineView(adView.findViewById(R.id.ad_headline));
+        adView.setBodyView(adView.findViewById(R.id.ad_body));
+        adView.setCallToActionView(adView.findViewById(R.id.ad_call_to_action));
+        adView.setIconView(adView.findViewById(R.id.ad_app_icon));
+        adView.setPriceView(adView.findViewById(R.id.ad_price));
+        adView.setStarRatingView(adView.findViewById(R.id.ad_stars));
+        adView.setAdvertiserView(adView.findViewById(R.id.ad_advertiser));
+
+        try {
+            adView.findViewById(R.id.close_ads).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    adView.setVisibility(View.GONE);
+                    if (nativeCallBack != null) {
+                        nativeCallBack.closeNativeAd();
+                    }
+                }
+            });
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            ((TextView) adView.getHeadlineView()).setText(nativeAd.getHeadline());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            if (nativeAd.getBody() == null) {
+                adView.getBodyView().setVisibility(View.INVISIBLE);
+            } else {
+                adView.getBodyView().setVisibility(View.VISIBLE);
+                ((TextView) adView.getBodyView()).setText(nativeAd.getBody());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            if (nativeAd.getCallToAction() == null) {
+                Objects.requireNonNull(adView.getCallToActionView()).setVisibility(View.INVISIBLE);
+            } else {
+                Objects.requireNonNull(adView.getCallToActionView()).setVisibility(View.VISIBLE);
+                ((TextView) adView.getCallToActionView()).setText(nativeAd.getCallToAction());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            if (nativeAd.getIcon() == null) {
+                Objects.requireNonNull(adView.getIconView()).setVisibility(View.GONE);
+            } else {
+                ((ImageView) adView.getIconView()).setImageDrawable(
+                        nativeAd.getIcon().getDrawable());
+                adView.getIconView().setVisibility(View.VISIBLE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            if (nativeAd.getPrice() == null) {
+                Objects.requireNonNull(adView.getPriceView()).setVisibility(View.INVISIBLE);
+            } else {
+                Objects.requireNonNull(adView.getPriceView()).setVisibility(View.VISIBLE);
+                ((TextView) adView.getPriceView()).setText(nativeAd.getPrice());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            if (nativeAd.getStarRating() == null) {
+                Objects.requireNonNull(adView.getStarRatingView()).setVisibility(View.INVISIBLE);
+            } else {
+                ((RatingBar) Objects.requireNonNull(adView.getStarRatingView())).setRating(nativeAd.getStarRating().floatValue());
+                adView.getStarRatingView().setVisibility(View.VISIBLE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            if (nativeAd.getAdvertiser() == null) {
+                adView.getAdvertiserView().setVisibility(View.INVISIBLE);
+            } else {
+                ((TextView) adView.getAdvertiserView()).setText(nativeAd.getAdvertiser());
+                adView.getAdvertiserView().setVisibility(View.VISIBLE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        adView.setNativeAd(nativeAd);
+
+    }
+
+
+
+
+    public void populateUnifiedNativeAdView(NativeAd nativeAd, NativeAdView adView, AdCallback nativeCallBack) {
+        adView.setMediaView(adView.findViewById(R.id.ad_media));
+        adView.setHeadlineView(adView.findViewById(R.id.ad_headline));
+        adView.setBodyView(adView.findViewById(R.id.ad_body));
+        adView.setCallToActionView(adView.findViewById(R.id.ad_call_to_action));
+        adView.setIconView(adView.findViewById(R.id.ad_app_icon));
+        adView.setPriceView(adView.findViewById(R.id.ad_price));
+        adView.setStarRatingView(adView.findViewById(R.id.ad_stars));
+        adView.setAdvertiserView(adView.findViewById(R.id.ad_advertiser));
+
+        try {
+            adView.findViewById(R.id.close_ads).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    adView.setVisibility(View.GONE);
+                    if (nativeCallBack != null) {
+                        nativeCallBack.onAdClosed();
+                    }
                 }
             });
         }catch (Exception e) {
