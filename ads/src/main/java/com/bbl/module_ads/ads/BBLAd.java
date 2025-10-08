@@ -507,7 +507,9 @@ public class BBLAd {
                 callback.onNativeAdLoaded(new ApNativeAd(layoutCustomNative, unifiedNativeAd));
                 populateNativeAdView(activity, new ApNativeAd(layoutCustomNative, unifiedNativeAd), adPlaceHolder, containerShimmerLoading, new NativeCallBack() {
                     @Override
-                    public void closeNativeAd() {
+                    public void closeNativeAd()
+                    {
+                        callback.onAdClosed();
                         frBanner.setVisibility(View.VISIBLE);
                     }
                 });
