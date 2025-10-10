@@ -205,6 +205,14 @@ public class BBLAd {
         Admob.getInstance().loadBanner(mActivity, id, adCallback);
     }
 
+    private void loadBanner(Activity activity, String idBanner, FrameLayout frBanner, ShimmerFrameLayout sfBanner, AdCallback adCallback) {
+        Admob.getInstance().loadBanner(activity, idBanner,frBanner, sfBanner, adCallback);
+    }
+
+
+
+
+
     public void loadCollapsibleBanner(Activity activity, String id, String gravity, AdCallback adCallback) {
         Admob.getInstance().loadCollapsibleBanner(activity, id, gravity, adCallback);
     }
@@ -507,17 +515,47 @@ public class BBLAd {
                     public void closeNativeAd() {
                         callback.onAdClosed();
                         frBanner.setVisibility(View.VISIBLE);
+
                     }
                 });
 
-                new Handler().postDelayed(new Runnable() {
+//                new Handler().postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        if (frBanner.getVisibility() == VISIBLE){
+//                            callback.onFailToShowNative();
+//                        }
+//                    }
+//                }, 500);
+                loadBanner(activity, idBanner, frBanner, sfBanner,new AdCallback() {
                     @Override
-                    public void run() {
-                        if (frBanner.getVisibility() == VISIBLE){
-                            callback.onFailToShowNative();
-                        }
+                    public void onAdLoaded() {
+                        super.onAdLoaded();
+                        frBanner.setVisibility(GONE);
                     }
-                }, 500);
+
+                    @Override
+                    public void onAdClicked() {
+                        super.onAdClicked();
+                        callback.onAdClicked();
+
+                    }
+
+                    @Override
+                    public void onAdFailedToLoad(@Nullable LoadAdError i) {
+                        super.onAdFailedToLoad(i);
+                        callback.onFailToLoadBanner();
+                        frBanner.setVisibility(GONE);
+                    }
+
+                    @Override
+                    public void onAdFailedToShow(@Nullable AdError adError) {
+                        super.onAdFailedToShow(adError);
+                        callback.onAdFailedToShow(adError);
+                        callback.onFailToLoadBanner();
+                        frBanner.setVisibility(GONE);
+                    }
+                });
             }
 
             @Override
@@ -561,36 +599,9 @@ public class BBLAd {
         });
 
 
-        loadBanner(activity, idBanner, new AdCallback() {
-            @Override
-            public void onAdLoaded() {
-                super.onAdLoaded();
-                frBanner.setVisibility(GONE);
-            }
 
-            @Override
-            public void onAdClicked() {
-                super.onAdClicked();
-                callback.onAdClicked();
-
-            }
-
-            @Override
-            public void onAdFailedToLoad(@Nullable LoadAdError i) {
-                super.onAdFailedToLoad(i);
-                callback.onFailToLoadBanner();
-                frBanner.setVisibility(GONE);
-            }
-
-            @Override
-            public void onAdFailedToShow(@Nullable AdError adError) {
-                super.onAdFailedToShow(adError);
-                callback.onAdFailedToShow(adError);
-                callback.onFailToLoadBanner();
-                frBanner.setVisibility(GONE);
-            }
-        });
     }
+
 
     public void loadNativeAd(final Activity activity, String id, int layoutCustomNative, FrameLayout adPlaceHolder, ShimmerFrameLayout containerShimmerLoading, AdCallback callback) {
         Admob.getInstance().loadNativeAd(((Context) activity), id, new AdCallback() {

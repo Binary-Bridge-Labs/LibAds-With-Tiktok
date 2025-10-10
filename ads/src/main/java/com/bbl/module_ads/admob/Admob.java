@@ -3925,4 +3925,7 @@ public class Admob {
         }, timeDelay);
     }
 
+    public void loadBanner(Activity activity, String idBanner, FrameLayout frBanner, ShimmerFrameLayout sfBanner, AdCallback adCallback) {
+        loadBanner(activity, idBanner, frBanner, sfBanner, adCallback, false, BANNER_INLINE_LARGE_STYLE);
+    }
 }
