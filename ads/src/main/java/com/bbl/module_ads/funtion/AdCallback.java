@@ -151,4 +151,8 @@ public class AdCallback {
 
     public void onFailToLoadNative(){
     }
+
+    public void onFailToShowBanner(){}
+
+    public void onFailToShowNative(){}
 }

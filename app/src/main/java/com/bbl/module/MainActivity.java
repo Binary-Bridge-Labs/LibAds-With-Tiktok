@@ -109,11 +109,26 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailToLoadNative() {
                 super.onFailToLoadNative();
+                Toast.makeText(MainActivity.this, "onFailToLoadNative", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailToShowNative() {
+                super.onFailToShowNative();
+                Toast.makeText(MainActivity.this, "onFailToShowNative", Toast.LENGTH_SHORT).show();
+            }
+
+
+            @Override
+            public void onFailToShowBanner() {
+                super.onFailToShowBanner();
+                Toast.makeText(MainActivity.this, "onFailToShowBanner", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFailToLoadBanner() {
                 super.onFailToLoadBanner();
+                Toast.makeText(MainActivity.this, "onFailToLoadBanner", Toast.LENGTH_SHORT).show();
             }
 
             @Override

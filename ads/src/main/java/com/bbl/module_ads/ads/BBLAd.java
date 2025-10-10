@@ -1,5 +1,7 @@
 package com.bbl.module_ads.ads;
 
+import static android.view.View.GONE;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
@@ -512,12 +514,15 @@ public class BBLAd {
                 super.onAdFailedToLoad(i);
                 callback.onFailToLoadNative();
                 callback.onAdFailedToLoad(i);
+                adPlaceHolder.setVisibility(GONE);
             }
 
             @Override
             public void onAdFailedToShow(@Nullable AdError adError) {
                 super.onAdFailedToShow(adError);
                 callback.onAdFailedToShow(adError);
+                callback.onFailToShowNative();
+                adPlaceHolder.setVisibility(GONE);
             }
 
             @Override
@@ -549,7 +554,7 @@ public class BBLAd {
             @Override
             public void onAdLoaded() {
                 super.onAdLoaded();
-                frBanner.setVisibility(View.GONE);
+                frBanner.setVisibility(GONE);
             }
 
             @Override
@@ -563,14 +568,15 @@ public class BBLAd {
             public void onAdFailedToLoad(@Nullable LoadAdError i) {
                 super.onAdFailedToLoad(i);
                 callback.onFailToLoadBanner();
-                frBanner.setVisibility(View.GONE);
+                frBanner.setVisibility(GONE);
             }
 
             @Override
             public void onAdFailedToShow(@Nullable AdError adError) {
                 super.onAdFailedToShow(adError);
                 callback.onAdFailedToShow(adError);
-                frBanner.setVisibility(View.GONE);
+                callback.onFailToLoadBanner();
+                frBanner.setVisibility(GONE);
             }
         });
     }
@@ -819,12 +825,12 @@ public class BBLAd {
 
     public void populateNativeAdView(Activity activity, ApNativeAd apNativeAd, FrameLayout adPlaceHolder, ShimmerFrameLayout containerShimmerLoading) {
         if (apNativeAd.getAdmobNativeAd() == null && apNativeAd.getNativeView() == null) {
-            containerShimmerLoading.setVisibility(View.GONE);
+            containerShimmerLoading.setVisibility(GONE);
             return;
         }
         @SuppressLint("InflateParams") NativeAdView adView = (NativeAdView) LayoutInflater.from(activity).inflate(apNativeAd.getLayoutCustomNative(), null);
         containerShimmerLoading.stopShimmer();
-        containerShimmerLoading.setVisibility(View.GONE);
+        containerShimmerLoading.setVisibility(GONE);
         adPlaceHolder.setVisibility(View.VISIBLE);
         Admob.getInstance().populateUnifiedNativeAdView(apNativeAd.getAdmobNativeAd(), adView);
         adPlaceHolder.removeAllViews();
@@ -834,12 +840,12 @@ public class BBLAd {
 
     public void populateNativeAdView(Activity activity, ApNativeAd apNativeAd, FrameLayout adPlaceHolder, ShimmerFrameLayout containerShimmerLoading, NativeCallBack callBack) {
         if (apNativeAd.getAdmobNativeAd() == null && apNativeAd.getNativeView() == null) {
-            containerShimmerLoading.setVisibility(View.GONE);
+            containerShimmerLoading.setVisibility(GONE);
             return;
         }
         @SuppressLint("InflateParams") NativeAdView adView = (NativeAdView) LayoutInflater.from(activity).inflate(apNativeAd.getLayoutCustomNative(), null);
         containerShimmerLoading.stopShimmer();
-        containerShimmerLoading.setVisibility(View.GONE);
+        containerShimmerLoading.setVisibility(GONE);
         adPlaceHolder.setVisibility(View.VISIBLE);
         Admob.getInstance().populateUnifiedNativeAdView(apNativeAd.getAdmobNativeAd(), adView, callBack);
         adPlaceHolder.removeAllViews();
@@ -849,12 +855,12 @@ public class BBLAd {
 
     public void populateNativeAdView(Activity activity, ApNativeAd apNativeAd, FrameLayout adPlaceHolder, ShimmerFrameLayout containerShimmerLoading, AdCallback callBack) {
         if (apNativeAd.getAdmobNativeAd() == null && apNativeAd.getNativeView() == null) {
-            containerShimmerLoading.setVisibility(View.GONE);
+            containerShimmerLoading.setVisibility(GONE);
             return;
         }
         @SuppressLint("InflateParams") NativeAdView adView = (NativeAdView) LayoutInflater.from(activity).inflate(apNativeAd.getLayoutCustomNative(), null);
         containerShimmerLoading.stopShimmer();
-        containerShimmerLoading.setVisibility(View.GONE);
+        containerShimmerLoading.setVisibility(GONE);
         adPlaceHolder.setVisibility(View.VISIBLE);
         Admob.getInstance().populateUnifiedNativeAdView(apNativeAd.getAdmobNativeAd(), adView, callBack);
         adPlaceHolder.removeAllViews();
