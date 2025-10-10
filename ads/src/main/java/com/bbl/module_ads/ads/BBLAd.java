@@ -1,12 +1,14 @@
 package com.bbl.module_ads.ads;
 
 import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -507,6 +509,15 @@ public class BBLAd {
                         frBanner.setVisibility(View.VISIBLE);
                     }
                 });
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (frBanner.getVisibility() == VISIBLE){
+                            callback.onFailToShowNative();
+                        }
+                    }
+                }, 500);
             }
 
             @Override
