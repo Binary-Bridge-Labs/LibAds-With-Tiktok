@@ -527,35 +527,7 @@ public class BBLAd {
 //                        }
 //                    }
 //                }, 500);
-                loadBanner(activity, idBanner, frBanner, sfBanner,new AdCallback() {
-                    @Override
-                    public void onAdLoaded() {
-                        super.onAdLoaded();
-                        frBanner.setVisibility(GONE);
-                    }
 
-                    @Override
-                    public void onAdClicked() {
-                        super.onAdClicked();
-                        callback.onAdClicked();
-
-                    }
-
-                    @Override
-                    public void onAdFailedToLoad(@Nullable LoadAdError i) {
-                        super.onAdFailedToLoad(i);
-                        callback.onFailToLoadBanner();
-                        frBanner.setVisibility(GONE);
-                    }
-
-                    @Override
-                    public void onAdFailedToShow(@Nullable AdError adError) {
-                        super.onAdFailedToShow(adError);
-                        callback.onAdFailedToShow(adError);
-                        callback.onFailToLoadBanner();
-                        frBanner.setVisibility(GONE);
-                    }
-                });
             }
 
             @Override
@@ -599,7 +571,35 @@ public class BBLAd {
         });
 
 
+        loadBanner(activity, idBanner, frBanner, sfBanner,new AdCallback() {
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+                frBanner.setVisibility(GONE);
+            }
 
+            @Override
+            public void onAdClicked() {
+                super.onAdClicked();
+                callback.onAdClicked();
+
+            }
+
+            @Override
+            public void onAdFailedToLoad(@Nullable LoadAdError i) {
+                super.onAdFailedToLoad(i);
+                callback.onFailToLoadBanner();
+                frBanner.setVisibility(GONE);
+            }
+
+            @Override
+            public void onAdFailedToShow(@Nullable AdError adError) {
+                super.onAdFailedToShow(adError);
+                callback.onAdFailedToShow(adError);
+                callback.onFailToLoadBanner();
+                frBanner.setVisibility(GONE);
+            }
+        });
     }
 
 
