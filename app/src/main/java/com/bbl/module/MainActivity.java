@@ -93,11 +93,33 @@ public class MainActivity extends AppCompatActivity {
       ShimmerFrameLayout sfBanner = findViewById(com.bbl.module_ads.R.id.shimmer_container_banner);
 
 
-        BBLAd.getInstance().loadNativeAndShowCollapse(this, BuildConfig.ad_native, R.layout.native_large, frAds, shimmerAds,BuildConfig.ad_banner, frBanner, sfBanner,new AdCallback() {
+        BBLAd.getInstance().loadNativeAndShowCollapse(this, BuildConfig.ad_native, R.layout.native_large, frAds, shimmerAds,"ca-app-pub-3940256099942544/6300978111", frBanner, sfBanner,new AdCallback() {
             @Override
             public void onAdClosed() {
                 super.onAdClosed();
+                Toast.makeText(MainActivity.this, "onAdClosed", Toast.LENGTH_SHORT).show();
+            }
 
+            @Override
+            public void onAdClicked(String adUnitId, String mediationAdapterClassName, AdType adType) {
+                super.onAdClicked(adUnitId, mediationAdapterClassName, adType);
+                Log.d("TAG", "onAdClicked: ");
+            }
+
+            @Override
+            public void onFailToLoadNative() {
+                super.onFailToLoadNative();
+            }
+
+            @Override
+            public void onFailToLoadBanner() {
+                super.onFailToLoadBanner();
+            }
+
+            @Override
+            public void onAdClicked() {
+                super.onAdClicked();
+                Toast.makeText(MainActivity.this, "onAdClicked", Toast.LENGTH_SHORT).show();
             }
         });
 

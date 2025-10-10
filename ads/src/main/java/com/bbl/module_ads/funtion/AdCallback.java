@@ -145,4 +145,10 @@ public class AdCallback {
 
     public void onTimeOutInterSplash() {
     }
+
+    public void onFailToLoadBanner(){
+    }
+
+    public void onFailToLoadNative(){
+    }
 }

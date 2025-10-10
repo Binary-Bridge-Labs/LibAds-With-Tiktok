@@ -102,8 +102,7 @@ public class BBLAd {
 
     public void setInitCallback(BBLInitCallback initCallback) {
         this.initCallback = initCallback;
-        if (initAdSuccess)
-            initCallback.initAdSuccess();
+        if (initAdSuccess) initCallback.initAdSuccess();
     }
 
     private void setupAdjust(Boolean buildDebug, String adjustToken) {
@@ -279,11 +278,8 @@ public class BBLAd {
         return apInterstitialAd;
     }
 
-    public void forceShowInterstitial(@NonNull Context context, ApInterstitialAd mInterstitialAd,
-                                      @NonNull final AdCallback callback, boolean shouldReloadAds) {
-        if (System.currentTimeMillis() - SharePreferenceUtils.getLastImpressionInterstitialTime(context)
-                < BBLAd.getInstance().adConfig.getIntervalInterstitialAd() * 1000L
-        ) {
+    public void forceShowInterstitial(@NonNull Context context, ApInterstitialAd mInterstitialAd, @NonNull final AdCallback callback, boolean shouldReloadAds) {
+        if (System.currentTimeMillis() - SharePreferenceUtils.getLastImpressionInterstitialTime(context) < BBLAd.getInstance().adConfig.getIntervalInterstitialAd() * 1000L) {
             callback.onNextAction();
             return;
         }
@@ -403,8 +399,7 @@ public class BBLAd {
         Admob.getInstance().forceShowInterstitial(context, mInterstitialAd.getInterstitialAd(), adCallback);
     }
 
-    public void loadNativeAdResultCallback(final Activity activity, String id,
-                                           int layoutCustomNative, AdCallback callback) {
+    public void loadNativeAdResultCallback(final Activity activity, String id, int layoutCustomNative, AdCallback callback) {
         Admob.getInstance().loadNativeAd(((Context) activity), id, new AdCallback() {
             @Override
             public void onUnifiedNativeAdLoaded(@NonNull NativeAd unifiedNativeAd) {
@@ -450,8 +445,7 @@ public class BBLAd {
     }
 
 
-    public void loadNativeAndShowCollapse(final Activity activity, String id,
-                                          int layoutCustomNative, FrameLayout adPlaceHolder, ShimmerFrameLayout containerShimmerLoading, AdCallback callback) {
+    public void loadNativeAndShowCollapse(final Activity activity, String id, int layoutCustomNative, FrameLayout adPlaceHolder, ShimmerFrameLayout containerShimmerLoading, AdCallback callback) {
         Admob.getInstance().loadNativeAd(((Context) activity), id, new AdCallback() {
             @Override
             public void onUnifiedNativeAdLoaded(@NonNull NativeAd unifiedNativeAd) {
@@ -498,8 +492,7 @@ public class BBLAd {
     }
 
 
-    public void loadNativeAndShowCollapse(final Activity activity, String id,
-                                          int layoutCustomNative, FrameLayout adPlaceHolder, ShimmerFrameLayout containerShimmerLoading, String idBanner, FrameLayout frBanner, ShimmerFrameLayout sfBanner, AdCallback callback) {
+    public void loadNativeAndShowCollapse(final Activity activity, String id, int layoutCustomNative, FrameLayout adPlaceHolder, ShimmerFrameLayout containerShimmerLoading, String idBanner, FrameLayout frBanner, ShimmerFrameLayout sfBanner, AdCallback callback) {
         Admob.getInstance().loadNativeAd(((Context) activity), id, new AdCallback() {
             @Override
             public void onUnifiedNativeAdLoaded(@NonNull NativeAd unifiedNativeAd) {
@@ -507,8 +500,7 @@ public class BBLAd {
                 callback.onNativeAdLoaded(new ApNativeAd(layoutCustomNative, unifiedNativeAd));
                 populateNativeAdView(activity, new ApNativeAd(layoutCustomNative, unifiedNativeAd), adPlaceHolder, containerShimmerLoading, new NativeCallBack() {
                     @Override
-                    public void closeNativeAd()
-                    {
+                    public void closeNativeAd() {
                         callback.onAdClosed();
                         frBanner.setVisibility(View.VISIBLE);
                     }
@@ -518,6 +510,7 @@ public class BBLAd {
             @Override
             public void onAdFailedToLoad(@Nullable LoadAdError i) {
                 super.onAdFailedToLoad(i);
+                callback.onFailToLoadNative();
                 callback.onAdFailedToLoad(i);
             }
 
@@ -558,12 +551,31 @@ public class BBLAd {
                 super.onAdLoaded();
                 frBanner.setVisibility(View.GONE);
             }
+
+            @Override
+            public void onAdClicked() {
+                super.onAdClicked();
+                callback.onAdClicked();
+
+            }
+
+            @Override
+            public void onAdFailedToLoad(@Nullable LoadAdError i) {
+                super.onAdFailedToLoad(i);
+                callback.onFailToLoadBanner();
+                frBanner.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAdFailedToShow(@Nullable AdError adError) {
+                super.onAdFailedToShow(adError);
+                callback.onAdFailedToShow(adError);
+                frBanner.setVisibility(View.GONE);
+            }
         });
     }
 
-    public void loadNativeAd(final Activity activity, String id,
-                             int layoutCustomNative, FrameLayout adPlaceHolder, ShimmerFrameLayout
-                                     containerShimmerLoading, AdCallback callback) {
+    public void loadNativeAd(final Activity activity, String id, int layoutCustomNative, FrameLayout adPlaceHolder, ShimmerFrameLayout containerShimmerLoading, AdCallback callback) {
         Admob.getInstance().loadNativeAd(((Context) activity), id, new AdCallback() {
             @Override
             public void onUnifiedNativeAdLoaded(@NonNull NativeAd unifiedNativeAd) {
@@ -850,8 +862,6 @@ public class BBLAd {
     }
 
 
-
-
     public ApRewardAd getRewardAd(Activity activity, String id) {
         ApRewardAd apRewardAd = new ApRewardAd();
         Admob.getInstance().initRewardAds(activity, id, new AdCallback() {
@@ -867,8 +877,7 @@ public class BBLAd {
     }
 
 
-    public void forceShowRewardAd(Activity activity, ApRewardAd apRewardAd, AdCallback
-            callback) {
+    public void forceShowRewardAd(Activity activity, ApRewardAd apRewardAd, AdCallback callback) {
         if (!apRewardAd.isReady()) {
             Log.e(TAG, "forceShowRewardAd fail: reward ad not ready");
             callback.onNextAction();
@@ -952,14 +961,7 @@ public class BBLAd {
         Admob.getInstance().showRewardAds(context, rewardedAd, adCallback);
     }
 
-    public void loadInterSplashPriority4SameTime(final Context context,
-                                                 String idAdsHigh1,
-                                                 String idAdsHigh2,
-                                                 String idAdsHigh3,
-                                                 String idAdsNormal,
-                                                 long timeOut,
-                                                 long timeDelay,
-                                                 AdCallback adListener) {
+    public void loadInterSplashPriority4SameTime(final Context context, String idAdsHigh1, String idAdsHigh2, String idAdsHigh3, String idAdsNormal, long timeOut, long timeDelay, AdCallback adListener) {
         Admob.getInstance().loadInterSplashPriority4SameTime(context, idAdsHigh1, idAdsHigh2, idAdsHigh3, idAdsNormal, timeOut, timeDelay, adListener);
     }
 
@@ -1172,30 +1174,20 @@ public class BBLAd {
         loadPriorityInterstitialAdsFromAdmob(context, apInterstitialPriorityAd, adCallback);
     }
 
-    public void loadPriorityInterstitialAdsFromAdmob(Context context,
-                                                     ApInterstitialPriorityAd apInterstitialPriorityAd,
-                                                     AdCallback adCallback) {
-        if (!apInterstitialPriorityAd.getHigh1PriorityId().isEmpty()
-                && !apInterstitialPriorityAd.getHigh1PriorityInterstitialAd().isReady()
-        ) {
+    public void loadPriorityInterstitialAdsFromAdmob(Context context, ApInterstitialPriorityAd apInterstitialPriorityAd, AdCallback adCallback) {
+        if (!apInterstitialPriorityAd.getHigh1PriorityId().isEmpty() && !apInterstitialPriorityAd.getHigh1PriorityInterstitialAd().isReady()) {
             loadAdsInterHigh1Priority(context, apInterstitialPriorityAd, adCallback);
         }
 
-        if (!apInterstitialPriorityAd.getHigh2PriorityId().isEmpty()
-                && !apInterstitialPriorityAd.getHigh2PriorityInterstitialAd().isReady()
-        ) {
+        if (!apInterstitialPriorityAd.getHigh2PriorityId().isEmpty() && !apInterstitialPriorityAd.getHigh2PriorityInterstitialAd().isReady()) {
             loadAdsInterHigh2Priority(context, apInterstitialPriorityAd, adCallback);
         }
 
-        if (!apInterstitialPriorityAd.getHigh3PriorityId().isEmpty()
-                && !apInterstitialPriorityAd.getHigh3PriorityInterstitialAd().isReady()
-        ) {
+        if (!apInterstitialPriorityAd.getHigh3PriorityId().isEmpty() && !apInterstitialPriorityAd.getHigh3PriorityInterstitialAd().isReady()) {
             loadAdsInterHigh3Priority(context, apInterstitialPriorityAd, adCallback);
         }
 
-        if (!apInterstitialPriorityAd.getNormalPriorityId().isEmpty()
-                && !apInterstitialPriorityAd.getNormalPriorityInterstitialAd().isReady()
-        ) {
+        if (!apInterstitialPriorityAd.getNormalPriorityId().isEmpty() && !apInterstitialPriorityAd.getNormalPriorityInterstitialAd().isReady()) {
             loadInterNormalPriority(context, apInterstitialPriorityAd, adCallback);
         }
     }
@@ -1379,21 +1371,13 @@ public class BBLAd {
 
     public void forceShowInterstitialPriority(Context context, ApInterstitialPriorityAd apInterstitialPriorityAd, AdCallback adCallback, boolean isReloadAds) {
         ApInterstitialAd interstitialAd;
-        if (apInterstitialPriorityAd.getHigh1PriorityInterstitialAd() != null
-                && apInterstitialPriorityAd.getHigh1PriorityInterstitialAd().isReady()
-        ) {
+        if (apInterstitialPriorityAd.getHigh1PriorityInterstitialAd() != null && apInterstitialPriorityAd.getHigh1PriorityInterstitialAd().isReady()) {
             interstitialAd = apInterstitialPriorityAd.getHigh1PriorityInterstitialAd();
-        } else if (apInterstitialPriorityAd.getHigh2PriorityInterstitialAd() != null
-                && apInterstitialPriorityAd.getHigh2PriorityInterstitialAd().isReady()
-        ) {
+        } else if (apInterstitialPriorityAd.getHigh2PriorityInterstitialAd() != null && apInterstitialPriorityAd.getHigh2PriorityInterstitialAd().isReady()) {
             interstitialAd = apInterstitialPriorityAd.getHigh2PriorityInterstitialAd();
-        } else if (apInterstitialPriorityAd.getHigh3PriorityInterstitialAd() != null
-                && apInterstitialPriorityAd.getHigh3PriorityInterstitialAd().isReady()
-        ) {
+        } else if (apInterstitialPriorityAd.getHigh3PriorityInterstitialAd() != null && apInterstitialPriorityAd.getHigh3PriorityInterstitialAd().isReady()) {
             interstitialAd = apInterstitialPriorityAd.getHigh3PriorityInterstitialAd();
-        } else if (apInterstitialPriorityAd.getNormalPriorityInterstitialAd() != null
-                && apInterstitialPriorityAd.getNormalPriorityInterstitialAd().isReady()
-        ) {
+        } else if (apInterstitialPriorityAd.getNormalPriorityInterstitialAd() != null && apInterstitialPriorityAd.getNormalPriorityInterstitialAd().isReady()) {
             interstitialAd = apInterstitialPriorityAd.getNormalPriorityInterstitialAd();
         } else {
             adCallback.onNextAction();
@@ -1402,63 +1386,59 @@ public class BBLAd {
             }
             return;
         }
-        forceShowInterstitial(context,
-                interstitialAd,
-                new AdCallback() {
-                    @Override
-                    public void onNextAction() {
-                        super.onNextAction();
-                        adCallback.onNextAction();
-                    }
+        forceShowInterstitial(context, interstitialAd, new AdCallback() {
+            @Override
+            public void onNextAction() {
+                super.onNextAction();
+                adCallback.onNextAction();
+            }
 
-                    @Override
-                    public void onAdClosed() {
-                        super.onAdClosed();
-                        interstitialAd.setInterstitialAd(null);
-                        adCallback.onAdClosed();
-                        if (isReloadAds) {
-                            loadPriorityInterstitialAds(context, apInterstitialPriorityAd, new AdCallback());
-                        }
-                    }
+            @Override
+            public void onAdClosed() {
+                super.onAdClosed();
+                interstitialAd.setInterstitialAd(null);
+                adCallback.onAdClosed();
+                if (isReloadAds) {
+                    loadPriorityInterstitialAds(context, apInterstitialPriorityAd, new AdCallback());
+                }
+            }
 
-                    @Override
-                    public void onInterstitialShow() {
-                        super.onInterstitialShow();
-                        adCallback.onInterstitialShow();
-                    }
+            @Override
+            public void onInterstitialShow() {
+                super.onInterstitialShow();
+                adCallback.onInterstitialShow();
+            }
 
-                    @Override
-                    public void onAdClicked() {
-                        super.onAdClicked();
-                        adCallback.onAdClicked();
-                    }
+            @Override
+            public void onAdClicked() {
+                super.onAdClicked();
+                adCallback.onAdClicked();
+            }
 
-                    @Override
-                    public void onAdClicked(String adUnitId, String mediationAdapterClassName, AdType adType) {
-                        super.onAdClicked(adUnitId, mediationAdapterClassName, adType);
-                        adCallback.onAdClicked(adUnitId, mediationAdapterClassName, adType);
-                    }
+            @Override
+            public void onAdClicked(String adUnitId, String mediationAdapterClassName, AdType adType) {
+                super.onAdClicked(adUnitId, mediationAdapterClassName, adType);
+                adCallback.onAdClicked(adUnitId, mediationAdapterClassName, adType);
+            }
 
-                    @Override
-                    public void onAdLogRev(AdValue adValue, String adUnitId, String mediationAdapterClassName, AdType adType) {
-                        super.onAdLogRev(adValue, adUnitId, mediationAdapterClassName, adType);
-                        adCallback.onAdLogRev(adValue, adUnitId, mediationAdapterClassName, adType);
-                    }
+            @Override
+            public void onAdLogRev(AdValue adValue, String adUnitId, String mediationAdapterClassName, AdType adType) {
+                super.onAdLogRev(adValue, adUnitId, mediationAdapterClassName, adType);
+                adCallback.onAdLogRev(adValue, adUnitId, mediationAdapterClassName, adType);
+            }
 
-                    @Override
-                    public void onAdFailedToShow(@Nullable AdError adError) {
-                        super.onAdFailedToShow(adError);
-                        adCallback.onAdFailedToShow(adError);
-                    }
+            @Override
+            public void onAdFailedToShow(@Nullable AdError adError) {
+                super.onAdFailedToShow(adError);
+                adCallback.onAdFailedToShow(adError);
+            }
 
-                    @Override
-                    public void onAdImpression() {
-                        super.onAdImpression();
-                        adCallback.onAdImpression();
-                    }
-                },
-                false
-        );
+            @Override
+            public void onAdImpression() {
+                super.onAdImpression();
+                adCallback.onAdImpression();
+            }
+        }, false);
     }
 }
 
