@@ -1829,6 +1829,17 @@ public class Admob {
                     }
                 }
             });
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (nativeCallBack != null) {
+                        if (adView.findViewById(R.id.close_ads).getVisibility() == View.VISIBLE) {
+                            adView.findViewById(R.id.close_ads).performClick();
+                        }
+                    }
+                }
+            }, 5000);
         }catch (Exception e) {
             e.printStackTrace();
         }

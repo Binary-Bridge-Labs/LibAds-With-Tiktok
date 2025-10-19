@@ -1,0 +1,192 @@
+{
+  "native_ads_config": {
+    "onboarding_group": {
+      "native_ob_1": {
+        "idAds": "ca-app-pub-3940256099942544/2247696110",
+        "layout": "ads_native_banner_layout",
+        "backgroundColor": "#FFFFFF",
+        "ctaColor": "#FF5722",
+        "isShow": true,
+        "stroke": "#E0E0E0"
+      },
+      "native_ob_2": {
+        "idAds": "ca-app-pub-3940256099942544/2247696111",
+        "layout": "ads_native_banner_layout_2",
+        "backgroundColor": "#F5F5F5",
+        "ctaColor": "#2196F3",
+        "isShow": true,
+        "stroke": "#CCCCCC"
+      },
+      "native_ob_3": {
+        "idAds": "ca-app-pub-3940256099942544/2247696112",
+        "layout": "ads_native_medium_layout",
+        "backgroundColor": "#E8F5E8",
+        "ctaColor": "#4CAF50",
+        "isShow": true,
+        "stroke": "#C8E6C9"
+      },
+      "native_ob_4": {
+        "idAds": "ca-app-pub-3940256099942544/2247696113",
+        "layout": "ads_native_medium_layout_2",
+        "backgroundColor": "#E8F5E8",
+        "ctaColor": "#4CAF50",
+        "isShow": true,
+        "stroke": "#C8E6C9"
+      },
+      "native_ob_full_1": {
+        "idAds": "ca-app-pub-3940256099942544/2247696114",
+        "layout": "ads_native_fullscreen1_layout",
+        "backgroundColor": "#E8F5E8",
+        "ctaColor": "#4CAF50",
+        "isShow": true,
+        "stroke": "#C8E6C9"
+      },
+      "native_ob_full_2": {
+        "idAds": "ca-app-pub-3940256099942544/2247696115",
+        "layout": "ads_native_fullscreen2_layout",
+        "backgroundColor": "#E8F5E8",
+        "ctaColor": "#4CAF50",
+        "isShow": true,
+        "stroke": "#C8E6C9"
+      },
+      "native_ob_custom": {
+        "idAds": "ca-app-pub-3940256099942544/2247696116",
+        "layout": "ads_native_custom1_layout",
+        "backgroundColor": "#FFF3E0",
+        "ctaColor": "#FF9800",
+        "isShow": true,
+        "stroke": "#FFE0B2"
+      }
+    },
+    "language_group": {
+      "language_1": {
+        "idAds": "ca-app-pub-3940256099942544/2247696120",
+        "layout": "ads_native_banner_layout",
+        "backgroundColor": "#FFFFFF",
+        "ctaColor": "#FF5722",
+        "isShow": true,
+        "stroke": "#E0E0E0"
+      },
+      "language_2": {
+        "idAds": "ca-app-pub-3940256099942544/2247696121",
+        "layout": "ads_native_banner_layout_2",
+        "backgroundColor": "#F5F5F5",
+        "ctaColor": "#2196F3",
+        "isShow": true,
+        "stroke": "#CCCCCC"
+      },
+      "language_dropdown": {
+        "idAds": "ca-app-pub-3940256099942544/2247696122",
+        "layout": "ads_native_medium_layout",
+        "backgroundColor": "#E8F5E8",
+        "ctaColor": "#4CAF50",
+        "isShow": true,
+        "stroke": "#C8E6C9"
+      },
+      "language_custom": {
+        "idAds": "ca-app-pub-3940256099942544/2247696123",
+        "layout": "ads_native_custom2_layout",
+        "backgroundColor": "#F3E5F5",
+        "ctaColor": "#9C27B0",
+        "isShow": true,
+        "stroke": "#E1BEE7"
+      }
+    },
+    "permission_group": {
+      "permission_1": {
+        "idAds": "ca-app-pub-3940256099942544/2247696130",
+        "layout": "ads_native_banner_layout",
+        "backgroundColor": "#FFFFFF",
+        "ctaColor": "#FF5722",
+        "isShow": true,
+        "stroke": "#E0E0E0"
+      },
+      "permission_2": {
+        "idAds": "ca-app-pub-3940256099942544/2247696131",
+        "layout": "ads_native_medium_layout",
+        "backgroundColor": "#FFF8E1",
+        "ctaColor": "#FFC107",
+        "isShow": true,
+        "stroke": "#FFECB3"
+      },
+      "permission_fullscreen": {
+        "idAds": "ca-app-pub-3940256099942544/2247696132",
+        "layout": "ads_native_fullscreen1_layout",
+        "backgroundColor": "#E3F2FD",
+        "ctaColor": "#2196F3",
+        "isShow": true,
+        "stroke": "#BBDEFB"
+      }
+    },
+    "home_group": {
+      "home_1": {
+        "idAds": "ca-app-pub-3940256099942544/2247696140",
+        "layout": "ads_native_banner_layout",
+        "backgroundColor": "#FFFFFF",
+        "ctaColor": "#FF5722",
+        "isShow": true,
+        "stroke": "#E0E0E0"
+      },
+      "home_2": {
+        "idAds": "ca-app-pub-3940256099942544/2247696141",
+        "layout": "ads_native_medium_layout",
+        "backgroundColor": "#F1F8E9",
+        "ctaColor": "#8BC34A",
+        "isShow": true,
+        "stroke": "#DCEDC8"
+      },
+      "home_custom": {
+        "idAds": "ca-app-pub-3940256099942544/2247696142",
+        "layout": "ads_native_custom3_layout",
+        "backgroundColor": "#FCE4EC",
+        "ctaColor": "#E91E63",
+        "isShow": true,
+        "stroke": "#F8BBD9"
+      }
+    },
+    "exit_group": {
+      "exit_1": {
+        "idAds": "ca-app-pub-3940256099942544/2247696150",
+        "layout": "native_exit1",
+        "backgroundColor": "#FFEBEE",
+        "ctaColor": "#F44336",
+        "isShow": true,
+        "stroke": "#FFCDD2"
+      },
+      "exit_3": {
+        "idAds": "ca-app-pub-3940256099942544/2247696151",
+        "layout": "native_exit3",
+        "backgroundColor": "#FFF3E0",
+        "ctaColor": "#FF9800",
+        "isShow": true,
+        "stroke": "#FFE0B2"
+      },
+      "exit_fullscreen": {
+        "idAds": "ca-app-pub-3940256099942544/2247696152",
+        "layout": "ads_native_fullscreen3_layout",
+        "backgroundColor": "#E8F5E8",
+        "ctaColor": "#4CAF50",
+        "isShow": true,
+        "stroke": "#C8E6C9"
+      }
+    },
+    "collapsible_group": {
+      "collap_1": {
+        "idAds": "ca-app-pub-3940256099942544/2247696160",
+        "layout": "ads_native_collap_1_button_2_info_3_media",
+        "backgroundColor": "#E1F5FE",
+        "ctaColor": "#03A9F4",
+        "isShow": true,
+        "stroke": "#B3E5FC"
+      },
+      "collap_2": {
+        "idAds": "ca-app-pub-3940256099942544/2247696161",
+        "layout": "ads_native_collap_1_media_2_info_3_button",
+        "backgroundColor": "#F3E5F5",
+        "ctaColor": "#9C27B0",
+        "isShow": true,
+        "stroke": "#E1BEE7"
+      }
+    }
+  }
+}
