@@ -1,6 +1,7 @@
 package com.bbl.module;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -20,8 +21,12 @@ import com.bbl.module_ads.billing.AppPurchase;
 import com.bbl.module_ads.funtion.AdCallback;
 import com.bbl.module_ads.funtion.AdType;
 import com.bbl.module_ads.funtion.PurchaseListener;
+import com.bbl.module_ads.remote.ConfigManager;
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.google.android.gms.ads.AdInspectorError;
 import com.google.android.gms.ads.AdValue;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.OnAdInspectorClosedListener;
 
 public class MainActivity extends AppCompatActivity {
     private ApInterstitialAd mInterstitialAd;
@@ -32,13 +37,15 @@ public class MainActivity extends AppCompatActivity {
     private ApNativeAd mApNativeAd;
     private ApRewardAd rewardedAds;
     private boolean isEarn = false;
+    private ConfigManager configManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        // Khởi tạo Firebase Remote Config ngay khi vào app
+        initializeFirebaseRemoteConfig();
         btnLoad = findViewById(R.id.btnLoad);
         btnShow = findViewById(R.id.btnShow);
         btnIap = findViewById(R.id.btnIap);
@@ -83,116 +90,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }, true));
 
-        // Banner Ads
 
-
-
-
-
-      FrameLayout frBanner = findViewById(com.bbl.module_ads.R.id.banner_container);
-      ShimmerFrameLayout sfBanner = findViewById(com.bbl.module_ads.R.id.shimmer_container_banner);
-
-
-        BBLAd.getInstance().loadNativeAndShowCollapse(this, BuildConfig.ad_native, R.layout.native_large, frAds, shimmerAds,"ca-app-pub-3940256099942544/6300978111", frBanner, sfBanner,new AdCallback() {
-            @Override
-            public void onAdClosed() {
-                super.onAdClosed();
-                Toast.makeText(MainActivity.this, "onAdClosed", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onAdClicked(String adUnitId, String mediationAdapterClassName, AdType adType) {
-                super.onAdClicked(adUnitId, mediationAdapterClassName, adType);
-                Log.d("TAG", "onAdClicked: ");
-            }
-
-            @Override
-            public void onFailToLoadNative() {
-                super.onFailToLoadNative();
-                Toast.makeText(MainActivity.this, "onFailToLoadNative", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFailToShowNative() {
-                super.onFailToShowNative();
-                Toast.makeText(MainActivity.this, "onFailToShowNative", Toast.LENGTH_SHORT).show();
-            }
-
-
-            @Override
-            public void onFailToShowBanner() {
-                super.onFailToShowBanner();
-                Toast.makeText(MainActivity.this, "onFailToShowBanner", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFailToLoadBanner() {
-                super.onFailToLoadBanner();
-                Toast.makeText(MainActivity.this, "onFailToLoadBanner", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onAdClicked() {
-                super.onAdClicked();
-                Toast.makeText(MainActivity.this, "onAdClicked", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        /*BBLAd.getInstance().loadCollapsibleBanner(this, BuildConfig.ad_banner, AppConstant.CollapsibleGravity.BOTTOM, new AdCallback());*/
-
-        // Native Ads: Load And Show
-//        BBLAd.getInstance().loadNativeAd(this, BuildConfig.ad_native, R.layout.native_large, frAds, shimmerAds, new AdCallback() {
-//            @Override
-//            public void onAdFailedToLoad(@Nullable LoadAdError i) {
-//                super.onAdFailedToLoad(i);
-//                frAds.removeAllViews();
-//            }
-//
-//            @Override
-//            public void onAdFailedToShow(@Nullable AdError adError) {
-//                super.onAdFailedToShow(adError);
-//                frAds.removeAllViews();
-//            }
-//        });
-
-
-        /*
-         *
-         * loadNativeAdsWithHighTwoId
-         * */
-
-//        BBLAd.getInstance().loadNativeAdsWithHighTwoId(
-//                this,
-//                BuildConfig.ad_native,                  // id normal
-//                BuildConfig.ad_native_high_priority_1,           // id high priority 1
-//                BuildConfig.ad_native_high_priority_2,           // id high priority 2 (nếu có)
-//                R.layout.native_large,
-//                frAds,
-//                shimmerAds,
-//                new AdCallback() {
-//                    @Override
-//                    public void onNativeAdLoaded(@NonNull ApNativeAd nativeAd) {
-//                        // Ad loaded successfully, optional custom handling here
-//                    }
-//
-//                    @Override
-//                    public void onAdFailedToLoad(@Nullable LoadAdError i) {
-//                        super.onAdFailedToLoad(i);
-//                        frAds.removeAllViews();
-//                    }
-//
-//                    @Override
-//                    public void onAdFailedToShow(@Nullable AdError adError) {
-//                        super.onAdFailedToShow(adError);
-//                        frAds.removeAllViews();
-//                    }
-//                });
-
-
-        // Native Ads: Load
-
-
-        // In-App Purchase
         AppPurchase.getInstance().setPurchaseListener(new PurchaseListener() {
             @Override
             public void onProductPurchased(String productId, String transactionDetails) {
@@ -246,5 +144,94 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         });
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                BBLAd.getInstance().loadNativeAd(MainActivity.this, "native_ob_1", new AdCallback() {
+
+                    @Override
+                    public void onNativeAdLoaded(@NonNull ApNativeAd nativeAd) {
+                        super.onNativeAdLoaded(nativeAd);
+                        BBLAd.getInstance().populateNativeAdView(MainActivity.this, nativeAd, frAds, new AdCallback());
+                    }
+                });
+            }
+        }, 5000); // Delay 5 giây để đảm bảo Remote Config đã được tải
+
+
+//        MobileAds.openAdInspector(this, new OnAdInspectorClosedListener() {
+//            public void onAdInspectorClosed(@Nullable AdInspectorError error) {
+//
+//            }
+//        });
     }
+
+    /**
+     * Khởi tạo Firebase Remote Config ngay khi vào app
+     */
+    private void initializeFirebaseRemoteConfig() {
+        Log.d("MainActivity", "=== INITIALIZING FIREBASE REMOTE CONFIG ===");
+
+        configManager = ConfigManager.getInstance(this);
+
+        // Khởi tạo và load config từ Firebase Remote Config
+        boolean initSuccess = configManager.initialize();
+        if (initSuccess) {
+            Log.d("MainActivity", "✅ ConfigManager initialized successfully");
+        } else {
+            Log.e("MainActivity", "❌ ConfigManager initialization failed");
+        }
+
+    }
+
+    /**
+     * Test lấy config để verify Firebase Remote Config hoạt động
+     */
+    private void getNativeConfigByName() {
+        Log.d("MainActivity", "=== TESTING CONFIG RETRIEVAL ===");
+
+        // Kiểm tra trạng thái initialization trước
+        if (configManager == null) {
+            Log.e("MainActivity", "❌ ConfigManager is null!");
+            return;
+        }
+
+        if (!configManager.isInitialized()) {
+            Log.e("MainActivity", "❌ ConfigManager not initialized yet!");
+            return;
+        }
+
+        Log.d("MainActivity", "✅ ConfigManager is initialized and ready");
+
+        // Test lấy config theo ID
+        com.bbl.module_ads.remote.NativeConfig config = configManager.getNativeConfig("native_ob_1");
+        if (config != null) {
+            Log.d("MainActivity", "✅ Retrieved config by ID 'native_ob_1':");
+            Log.d("MainActivity", "   - Ad Unit ID: " + config.getIdAds());
+            Log.d("MainActivity", "   - Layout: " + config.getLayout());
+            Log.d("MainActivity", "   - Background: " + config.getBackgroundColor());
+            Log.d("MainActivity", "   - CTA Color: " + config.getCtaColor());
+            Log.d("MainActivity", "   - Is Show: " + config.isShow());
+            Log.d("MainActivity", "   - Stroke: " + config.getStroke());
+        } else {
+            Log.e("MainActivity", "❌ Failed to retrieve config by ID 'native_ob_1'");
+
+            // Debug: Log tất cả configs có sẵn
+            Log.d("MainActivity", "Available config IDs: " + configManager.getAllConfigIds());
+            Log.d("MainActivity", "Available groups: " + configManager.getAllGroupNames());
+        }
+
+        // Test lấy config từ group
+        com.bbl.module_ads.remote.NativeConfig onboardingConfig = configManager.getOnboardingConfig(null);
+        if (onboardingConfig != null) {
+            Log.d("MainActivity", "✅ Retrieved random onboarding config:");
+            Log.d("MainActivity", "   - Ad Unit ID: " + onboardingConfig.getIdAds());
+            Log.d("MainActivity", "   - Layout: " + onboardingConfig.getLayout());
+        } else {
+            Log.e("MainActivity", "❌ Failed to retrieve onboarding config");
+        }
+    }
+
+
 }

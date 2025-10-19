@@ -47,6 +47,8 @@ dependencies {
     implementation "com.google.guava:guava:27.1-android"
 
     implementation 'com.google.firebase:firebase-analytics:22.0.2'
+    implementation 'com.google.firebase:firebase-config:23.0.1'
+    implementation 'com.google.code.gson:gson:2.8.9'
 
     // Mediation
     implementation 'com.google.ads.mediation:facebook:6.17.0.0'
@@ -71,6 +73,7 @@ dependencies {
     // Sdp & Ssp
     implementation 'com.intuit.sdp:sdp-android:1.1.1'
     implementation 'com.intuit.ssp:ssp-android:1.1.0'
+    implementation 'com.google.firebase:firebase-config:23.0.1'
 }
 
 afterEvaluate {

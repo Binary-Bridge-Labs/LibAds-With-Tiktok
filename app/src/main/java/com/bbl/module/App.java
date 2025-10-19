@@ -1,5 +1,7 @@
 package com.bbl.module;
 
+import androidx.annotation.Nullable;
+
 import com.bbl.module_ads.admob.Admob;
 import com.bbl.module_ads.admob.AppOpenManager;
 import com.bbl.module_ads.ads.BBLAd;
@@ -9,6 +11,9 @@ import com.bbl.module_ads.config.AdjustConfig;
 import com.bbl.module_ads.config.BBLAdConfig;
 import com.bbl.module.BuildConfig;
 import com.bbl.module.R;
+import com.google.android.gms.ads.AdInspectorError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.OnAdInspectorClosedListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +35,7 @@ public class App extends AdsMultiDexApplication {
         mBBLAdConfig.setFacebookClientToken(getString(R.string.facebook_client_token));
         mBBLAdConfig.setAdjustTokenTiktok(getString(R.string.tiktok_token));
         ArrayList<String> listDevices = new ArrayList<>();
-        listDevices.add("C20CB584D5F3884F6EEEC91B0FF540A2");
+        listDevices.add("DAFCA7DD778C2F8979C917B39210388B");
         mBBLAdConfig.setListDeviceTest(listDevices);
         mBBLAdConfig.setIdAdResume("");
 

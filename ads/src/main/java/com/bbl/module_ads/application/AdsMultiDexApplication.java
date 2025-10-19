@@ -3,6 +3,7 @@ package com.bbl.module_ads.application;
 import androidx.multidex.MultiDexApplication;
 
 import com.bbl.module_ads.config.BBLAdConfig;
+import com.bbl.module_ads.remote.ConfigManager;
 import com.bbl.module_ads.util.AppUtil;
 import com.bbl.module_ads.util.SharePreferenceUtils;
 
@@ -14,9 +15,14 @@ public abstract class AdsMultiDexApplication extends MultiDexApplication {
     protected BBLAdConfig mBBLAdConfig;
     protected List<String> listTestDevice;
 
+
+
+
+
     @Override
     public void onCreate() {
         super.onCreate();
+
         listTestDevice = new ArrayList<String>();
         mBBLAdConfig = new BBLAdConfig(this);
         if (SharePreferenceUtils.getInstallTime(this) == 0) {

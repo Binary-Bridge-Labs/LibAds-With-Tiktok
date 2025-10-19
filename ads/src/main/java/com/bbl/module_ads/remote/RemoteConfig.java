@@ -1,186 +1,418 @@
 package com.bbl.module_ads.remote;
 
+import android.content.Context;
+import android.util.Log;
+
+import com.bbl.module_ads.R;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * RemoteConfig chính để quản lý tất cả các config của ứng dụng
- * Bao gồm các group config cho native ads và các config khác
+ * RemoteConfig - Quản lý và truy xuất các NativeConfig từ Firebase Remote Config
+ * Cung cấp các phương thức để lấy config theo ID hoặc group
  */
 public class RemoteConfig {
     
-    // Map chứa các GroupNativeConfig với key là tên group
-    private Map<String, GroupNativeConfig> groupNativeConfigs;
+    private static final String TAG = "RemoteConfig";
+    private static final String FIREBASE_CONFIG_KEY = "native_ads_config";
+    private static RemoteConfig instance;
+    private Context context;
+    private FirebaseRemoteConfig firebaseRemoteConfig;
+    private Map<String, NativeConfig> configMap;
+    private Map<String, List<NativeConfig>> groupConfigMap;
+    private boolean isInitialized = false;
+    private boolean isFirebaseInitialized = false;
     
-    // Constructor mặc định
-    public RemoteConfig() {
-        this.groupNativeConfigs = new HashMap<>();
-    }
-    
-    // Thêm một GroupNativeConfig
-    public void addGroupNativeConfig(String groupName, GroupNativeConfig groupConfig) {
-        if (groupConfig != null) {
-            groupNativeConfigs.put(groupName, groupConfig);
-        }
-    }
-    
-    // Lấy GroupNativeConfig theo tên
-    public GroupNativeConfig getGroupNativeConfig(String groupName) {
-        return groupNativeConfigs.get(groupName);
-    }
-    
-    // Xóa GroupNativeConfig theo tên
-    public boolean removeGroupNativeConfig(String groupName) {
-        return groupNativeConfigs.remove(groupName) != null;
-    }
-    
-    // Kiểm tra xem có tồn tại group với tên này không
-    public boolean hasGroup(String groupName) {
-        return groupNativeConfigs.containsKey(groupName);
-    }
-    
-    // Lấy tất cả tên group
-    public String[] getAllGroupNames() {
-        return groupNativeConfigs.keySet().toArray(new String[0]);
-    }
-    
-    // Lấy số lượng group
-    public int getGroupCount() {
-        return groupNativeConfigs.size();
-    }
-    
-    // Kiểm tra có group nào không
-    public boolean hasAnyGroup() {
-        return !groupNativeConfigs.isEmpty();
-    }
-    
-    // Xóa tất cả group
-    public void clearAllGroups() {
-        groupNativeConfigs.clear();
-    }
-    
-    // Lấy NativeConfig cụ thể từ một group cụ thể
-    public NativeConfig getNativeConfig(String groupName, String configName) {
-        GroupNativeConfig group = getGroupNativeConfig(groupName);
-        return group != null ? group.getNativeConfig(configName) : null;
-    }
-    
-    // Thêm NativeConfig vào một group cụ thể
-    public void addNativeConfig(String groupName, String configName, NativeConfig nativeConfig) {
-        GroupNativeConfig group = getGroupNativeConfig(groupName);
-        if (group == null) {
-            group = new GroupNativeConfig(groupName);
-            addGroupNativeConfig(groupName, group);
-        }
-        group.addNativeConfig(configName, nativeConfig);
+    // Private constructor để implement Singleton pattern
+    private RemoteConfig(Context context) {
+        this.context = context.getApplicationContext();
+        this.configMap = new HashMap<>();
+        this.groupConfigMap = new HashMap<>();
+        initializeFirebaseRemoteConfig();
     }
     
     /**
-     * Tìm NativeConfig theo ad_unit_id
-     * Tìm kiếm trong tất cả các group và trả về config đầu tiên tìm thấy
-     * @param adUnitId Ad unit ID cần tìm
-     * @return NativeConfig tương ứng, null nếu không tìm thấy
+     * Lấy instance của RemoteConfig (Singleton)
+     * @param context Application context
+     * @return RemoteConfig instance
      */
-    public NativeConfig getNativeConfigByAdUnitId(String adUnitId) {
-        if (adUnitId == null || adUnitId.isEmpty()) {
+    public static synchronized RemoteConfig getInstance(Context context) {
+        if (instance == null) {
+            instance = new RemoteConfig(context);
+        }
+        return instance;
+    }
+    
+    /**
+     * Khởi tạo Firebase Remote Config
+     */
+    private void initializeFirebaseRemoteConfig() {
+        try {
+            firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+            
+            // Cấu hình Firebase Remote Config settings
+            FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
+                    .setMinimumFetchIntervalInSeconds(3600) // 1 hour cache
+                    .build();
+            
+            firebaseRemoteConfig.setConfigSettingsAsync(configSettings);
+            
+            // Set default values từ local JSON file (fallback)
+            String defaultJson = loadJsonFromRaw();
+            if (defaultJson != null && !defaultJson.isEmpty()) {
+                Map<String, Object> defaults = new HashMap<>();
+                defaults.put(FIREBASE_CONFIG_KEY, defaultJson);
+                firebaseRemoteConfig.setDefaultsAsync(defaults);
+            }
+            
+            isFirebaseInitialized = true;
+            Log.d(TAG, "Firebase Remote Config initialized successfully");
+            
+        } catch (Exception e) {
+            Log.e(TAG, "Error initializing Firebase Remote Config", e);
+            isFirebaseInitialized = false;
+        }
+    }
+    
+    /**
+     * Khởi tạo và load config từ Firebase Remote Config
+     * @return true nếu load thành công, false nếu có lỗi
+     */
+    public boolean initialize() {
+        if (isInitialized) {
+            return true;
+        }
+        
+        if (!isFirebaseInitialized) {
+            Log.e(TAG, "Firebase Remote Config not initialized");
+            return false;
+        }
+        
+        try {
+            Log.d(TAG, "Starting Firebase Remote Config initialization...");
+            
+            // Load config hiện tại trước (có thể là cached hoặc default)
+            loadConfigFromFirebase();
+            
+            // Fetch config mới từ Firebase (async)
+            firebaseRemoteConfig.fetchAndActivate()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "Firebase Remote Config fetch successful");
+                            loadConfigFromFirebase();
+                        } else {
+                            Log.e(TAG, "Firebase Remote Config fetch failed", task.getException());
+                            // Fallback to local config
+                            loadConfigFromLocal();
+                        }
+                    });
+            
+            isInitialized = true;
+            Log.d(TAG, "RemoteConfig initialized successfully with " + configMap.size() + " configs");
+            return true;
+            
+        } catch (Exception e) {
+            Log.e(TAG, "Error initializing RemoteConfig", e);
+            // Fallback to local config
+            loadConfigFromLocal();
+            return isInitialized;
+        }
+    }
+    
+    /**
+     * Load config từ Firebase Remote Config
+     */
+    private void loadConfigFromFirebase() {
+        try {
+            Log.d(TAG, "Loading config from Firebase Remote Config...");
+            String jsonString = firebaseRemoteConfig.getString(FIREBASE_CONFIG_KEY);
+            Log.d(TAG, "Firebase config string length: " + (jsonString != null ? jsonString.length() : "null"));
+            
+            if (jsonString != null && !jsonString.isEmpty()) {
+                Log.d(TAG, "Firebase config string preview: " + jsonString.substring(0, Math.min(100, jsonString.length())) + "...");
+                parseJsonConfig(jsonString);
+                Log.d(TAG, "✅ Config loaded from Firebase Remote Config successfully");
+            } else {
+                Log.w(TAG, "⚠️ Firebase Remote Config returned empty string, using local fallback");
+                loadConfigFromLocal();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "❌ Error loading config from Firebase", e);
+            loadConfigFromLocal();
+        }
+    }
+    
+    /**
+     * Load config từ local JSON file (fallback)
+     */
+    private void loadConfigFromLocal() {
+        try {
+            Log.d(TAG, "Loading config from local JSON file (fallback)...");
+            String jsonString = loadJsonFromRaw();
+            if (jsonString != null && !jsonString.isEmpty()) {
+                Log.d(TAG, "Local JSON string length: " + jsonString.length());
+                parseJsonConfig(jsonString);
+                Log.d(TAG, "✅ Config loaded from local JSON file (fallback) successfully");
+            } else {
+                Log.e(TAG, "❌ Failed to load JSON from local resources");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "❌ Error loading config from local", e);
+        }
+    }
+    
+    /**
+     * Load JSON string từ raw resources
+     * @return JSON string hoặc null nếu có lỗi
+     */
+    private String loadJsonFromRaw() {
+        try {
+            InputStream inputStream = context.getResources().openRawResource(R.raw.native_ads_config);
+            byte[] buffer = new byte[inputStream.available()];
+            inputStream.read(buffer);
+            inputStream.close();
+            return new String(buffer, "UTF-8");
+        } catch (IOException e) {
+            Log.e(TAG, "Error reading JSON from raw resources", e);
+            return null;
+        }
+    }
+    
+    /**
+     * Parse JSON config và tạo các NativeConfig objects
+     * @param jsonString JSON string từ file
+     */
+    private void parseJsonConfig(String jsonString) {
+        try {
+            Log.d(TAG, "Parsing JSON config...");
+            Gson gson = new Gson();
+            JsonObject rootObject = JsonParser.parseString(jsonString).getAsJsonObject();
+            JsonObject nativeAdsConfig = rootObject.getAsJsonObject("native_ads_config");
+            
+            if (nativeAdsConfig == null) {
+                Log.e(TAG, "❌ native_ads_config not found in JSON");
+                return;
+            }
+            
+            Log.d(TAG, "Found native_ads_config, parsing groups...");
+            int totalConfigs = 0;
+            
+            // Parse từng group
+            for (String groupName : nativeAdsConfig.keySet()) {
+                JsonObject groupObject = nativeAdsConfig.getAsJsonObject(groupName);
+                List<NativeConfig> groupConfigs = new ArrayList<>();
+                
+                Log.d(TAG, "Parsing group: " + groupName);
+                
+                // Parse từng config trong group
+                for (String configId : groupObject.keySet()) {
+                    JsonObject configObject = groupObject.getAsJsonObject(configId);
+                    
+                    NativeConfig config = gson.fromJson(configObject, NativeConfig.class);
+                    
+                    // Lưu vào map với key là configId
+                    configMap.put(configId, config);
+                    
+                    // Thêm vào group list
+                    groupConfigs.add(config);
+                    
+                    totalConfigs++;
+                    Log.d(TAG, "  ✅ Loaded config: " + configId + " -> " + config.toString());
+                }
+                
+                // Lưu group configs
+                groupConfigMap.put(groupName, groupConfigs);
+                Log.d(TAG, "Group " + groupName + " has " + groupConfigs.size() + " configs");
+            }
+            
+            Log.d(TAG, "✅ JSON parsing completed! Total configs: " + totalConfigs);
+            
+        } catch (Exception e) {
+            Log.e(TAG, "❌ Error parsing JSON config", e);
+        }
+    }
+    
+    /**
+     * Lấy NativeConfig theo ID
+     * @param configId ID của config (ví dụ: "native_ob_1", "language_1", etc.)
+     * @return NativeConfig object hoặc null nếu không tìm thấy
+     */
+    public NativeConfig getNativeConfig(String configId) {
+        if (!isInitialized) {
+            Log.w(TAG, "RemoteConfig not initialized. Call initialize() first.");
             return null;
         }
         
-        for (GroupNativeConfig group : groupNativeConfigs.values()) {
-            for (NativeConfig config : group.getAllNativeConfigs()) {
-                if (adUnitId.equals(config.getIdAds())) {
-                    return config;
-                }
-            }
-        }
-        return null;
-    }
-    
-    /**
-     * Lấy tất cả NativeConfig có cùng ad_unit_id
-     * @param adUnitId Ad unit ID cần tìm
-     * @return List chứa tất cả NativeConfig có cùng ad_unit_id
-     */
-    public List<NativeConfig> getAllNativeConfigsByAdUnitId(String adUnitId) {
-        List<NativeConfig> result = new ArrayList<>();
-        if (adUnitId == null || adUnitId.isEmpty()) {
-            return result;
+        NativeConfig config = configMap.get(configId);
+        if (config == null) {
+            Log.w(TAG, "Config not found for ID: " + configId);
         }
         
-        for (GroupNativeConfig group : groupNativeConfigs.values()) {
-            for (NativeConfig config : group.getAllNativeConfigs()) {
-                if (adUnitId.equals(config.getIdAds())) {
-                    result.add(config);
-                }
-            }
-        }
-        return result;
+        return config;
     }
     
     /**
-     * Tìm NativeConfig theo ad_unit_id và trả về thông tin group và config name
-     * @param adUnitId Ad unit ID cần tìm
-     * @return Map chứa thông tin: "groupName", "configName", "nativeConfig"
+     * Lấy tất cả configs trong một group
+     * @param groupName Tên group (ví dụ: "onboarding_group", "language_group", etc.)
+     * @return List<NativeConfig> hoặc empty list nếu không tìm thấy
      */
-    public Map<String, Object> getNativeConfigInfoByAdUnitId(String adUnitId) {
-        Map<String, Object> result = new HashMap<>();
-        if (adUnitId == null || adUnitId.isEmpty()) {
-            return result;
+    public List<NativeConfig> getNativeConfigsByGroup(String groupName) {
+        if (!isInitialized) {
+            Log.w(TAG, "RemoteConfig not initialized. Call initialize() first.");
+            return new ArrayList<>();
         }
         
-        for (Map.Entry<String, GroupNativeConfig> groupEntry : groupNativeConfigs.entrySet()) {
-            String groupName = groupEntry.getKey();
-            GroupNativeConfig group = groupEntry.getValue();
-            
-            for (Map.Entry<String, NativeConfig> configEntry : group.getNativeConfigs().entrySet()) {
-                String configName = configEntry.getKey();
-                NativeConfig config = configEntry.getValue();
-                
-                if (adUnitId.equals(config.getIdAds())) {
-                    result.put("groupName", groupName);
-                    result.put("configName", configName);
-                    result.put("nativeConfig", config);
-                    return result;
-                }
-            }
+        List<NativeConfig> configs = groupConfigMap.get(groupName);
+        if (configs == null) {
+            Log.w(TAG, "Group not found: " + groupName);
+            return new ArrayList<>();
         }
-        return result;
+        
+        return new ArrayList<>(configs);
     }
     
     /**
-     * Kiểm tra xem có tồn tại NativeConfig với ad_unit_id này không
-     * @param adUnitId Ad unit ID cần kiểm tra
-     * @return true nếu tồn tại, false nếu không
+     * Lấy config đầu tiên trong group (có thể dùng làm default)
+     * @param groupName Tên group
+     * @return NativeConfig đầu tiên hoặc null nếu group trống
      */
-    public boolean hasNativeConfigWithAdUnitId(String adUnitId) {
-        return getNativeConfigByAdUnitId(adUnitId) != null;
+    public NativeConfig getFirstConfigInGroup(String groupName) {
+        List<NativeConfig> configs = getNativeConfigsByGroup(groupName);
+        return configs.isEmpty() ? null : configs.get(0);
     }
     
     /**
-     * Đếm số lượng NativeConfig có cùng ad_unit_id
-     * @param adUnitId Ad unit ID cần đếm
-     * @return Số lượng config có cùng ad_unit_id
+     * Lấy config ngẫu nhiên trong group
+     * @param groupName Tên group
+     * @return NativeConfig ngẫu nhiên hoặc null nếu group trống
      */
-    public int countNativeConfigsByAdUnitId(String adUnitId) {
-        return getAllNativeConfigsByAdUnitId(adUnitId).size();
+    public NativeConfig getRandomConfigInGroup(String groupName) {
+        List<NativeConfig> configs = getNativeConfigsByGroup(groupName);
+        if (configs.isEmpty()) {
+            return null;
+        }
+        
+        int randomIndex = (int) (Math.random() * configs.size());
+        return configs.get(randomIndex);
     }
     
-    // Getters và Setters
-    public Map<String, GroupNativeConfig> getGroupNativeConfigs() {
-        return groupNativeConfigs;
+    /**
+     * Lấy tất cả config IDs có sẵn
+     * @return List<String> chứa tất cả config IDs
+     */
+    public List<String> getAllConfigIds() {
+        if (!isInitialized) {
+            Log.w(TAG, "RemoteConfig not initialized. Call initialize() first.");
+            return new ArrayList<>();
+        }
+        
+        return new ArrayList<>(configMap.keySet());
     }
     
-    public void setGroupNativeConfigs(Map<String, GroupNativeConfig> groupNativeConfigs) {
-        this.groupNativeConfigs = groupNativeConfigs != null ? groupNativeConfigs : new HashMap<>();
+    /**
+     * Lấy tất cả group names có sẵn
+     * @return List<String> chứa tất cả group names
+     */
+    public List<String> getAllGroupNames() {
+        if (!isInitialized) {
+            Log.w(TAG, "RemoteConfig not initialized. Call initialize() first.");
+            return new ArrayList<>();
+        }
+        
+        return new ArrayList<>(groupConfigMap.keySet());
     }
     
-    @Override
-    public String toString() {
-        return "RemoteConfig{" +
-                "groupCount=" + groupNativeConfigs.size() +
-                ", groupNativeConfigs=" + groupNativeConfigs +
-                '}';
+    /**
+     * Kiểm tra xem config có tồn tại không
+     * @param configId ID của config
+     * @return true nếu config tồn tại, false nếu không
+     */
+    public boolean hasConfig(String configId) {
+        return isInitialized && configMap.containsKey(configId);
+    }
+    
+    /**
+     * Kiểm tra xem group có tồn tại không
+     * @param groupName Tên group
+     * @return true nếu group tồn tại, false nếu không
+     */
+    public boolean hasGroup(String groupName) {
+        return isInitialized && groupConfigMap.containsKey(groupName);
+    }
+    
+    /**
+     * Reset và reload config từ Firebase (có thể dùng khi cần refresh)
+     */
+    public void reload() {
+        configMap.clear();
+        groupConfigMap.clear();
+        isInitialized = false;
+        initialize();
+    }
+    
+    /**
+     * Force fetch config mới từ Firebase Remote Config
+     * @param callback Callback để nhận kết quả
+     */
+    public void forceRefresh(RefreshCallback callback) {
+        if (!isFirebaseInitialized) {
+            Log.e(TAG, "Firebase Remote Config not initialized");
+            if (callback != null) {
+                callback.onRefreshFailed("Firebase Remote Config not initialized");
+            }
+            return;
+        }
+        
+        firebaseRemoteConfig.fetch(0) // Force fetch (ignore cache)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        firebaseRemoteConfig.activate()
+                                .addOnCompleteListener(activateTask -> {
+                                    if (activateTask.isSuccessful()) {
+                                        loadConfigFromFirebase();
+                                        Log.d(TAG, "Config refreshed from Firebase successfully");
+                                        if (callback != null) {
+                                            callback.onRefreshSuccess();
+                                        }
+                                    } else {
+                                        Log.e(TAG, "Failed to activate Firebase Remote Config", activateTask.getException());
+                                        if (callback != null) {
+                                            callback.onRefreshFailed("Failed to activate config");
+                                        }
+                                    }
+                                });
+                    } else {
+                        Log.e(TAG, "Failed to fetch Firebase Remote Config", task.getException());
+                        if (callback != null) {
+                            callback.onRefreshFailed("Failed to fetch config");
+                        }
+                    }
+                });
+    }
+    
+    /**
+     * Interface callback cho refresh operation
+     */
+    public interface RefreshCallback {
+        void onRefreshSuccess();
+        void onRefreshFailed(String error);
+    }
+    
+    /**
+     * Kiểm tra trạng thái initialization
+     * @return true nếu đã được khởi tạo, false nếu chưa
+     */
+    public boolean isInitialized() {
+        return isInitialized;
     }
 }
