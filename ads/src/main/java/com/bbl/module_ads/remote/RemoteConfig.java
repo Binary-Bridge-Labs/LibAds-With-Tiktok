@@ -40,7 +40,12 @@ public class RemoteConfig {
         this.groupConfigMap = new HashMap<>();
         initializeFirebaseRemoteConfig();
     }
-    
+
+
+    public FirebaseRemoteConfig getFirebaseRemoteConfig() {
+        return firebaseRemoteConfig;
+    }
+
     /**
      * Lấy instance của RemoteConfig (Singleton)
      * @param context Application context

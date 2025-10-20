@@ -39,7 +39,16 @@ public class ConfigManager {
     public boolean initialize() {
         return remoteConfig.initialize();
     }
-    
+
+    public String getStringValue(String key) {
+        return remoteConfig.getFirebaseRemoteConfig().getString(key);
+    }
+
+
+    public boolean getBooleanValue(String key) {
+        return remoteConfig.getFirebaseRemoteConfig().getBoolean(key);
+    }
+
     /**
      * Lấy NativeConfig theo ID
      * @param configId ID của config
