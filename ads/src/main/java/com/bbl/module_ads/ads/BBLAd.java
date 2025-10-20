@@ -603,7 +603,11 @@ public class BBLAd {
     public void loadNativeAd(final Activity activity, String name, AdCallback callback) {
         NativeConfig config = ConfigManager.getInstance(activity).getNativeConfig(name);
         Log.d(TAG, "loadNativeAd: " + config.getIdAds());
-        Admob.getInstance().loadNativeAd(((Context) activity), config.getIdAds(), new AdCallback() {
+        String id = config.getIdAds();
+        if (BuildConfig.DEBUG) {
+            id = "ca-app-pub-3940256099942544/2247696110";
+        }
+        Admob.getInstance().loadNativeAd(((Context) activity), id, new AdCallback() {
             @Override
             public void onUnifiedNativeAdLoaded(@NonNull NativeAd unifiedNativeAd) {
                 super.onUnifiedNativeAdLoaded(unifiedNativeAd);
