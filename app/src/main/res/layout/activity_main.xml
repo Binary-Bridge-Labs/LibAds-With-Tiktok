@@ -72,4 +72,48 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnLoadReward" />
 
+    <Button
+        android:id="@+id/btnTestOrganic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Test Organic User"
+        android:backgroundTint="#4CAF50"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnShowReward" />
+
+    <Button
+        android:id="@+id/btnTestNonOrganic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Test Non-Organic User"
+        android:backgroundTint="#FF9800"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnTestOrganic" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_margin="16dp"
+        android:background="#F5F5F5"
+        android:padding="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/fr_banner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnTestNonOrganic">
+
+        <TextView
+            android:id="@+id/tvTestResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Test Results will appear here...\n\nClick buttons above to test Organic/Non-Organic users"
+            android:textSize="12sp"
+            android:textColor="#333333"
+            android:fontFamily="monospace" />
+
+    </ScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -30,8 +31,9 @@ import com.google.android.gms.ads.OnAdInspectorClosedListener;
 
 public class MainActivity extends AppCompatActivity {
     private ApInterstitialAd mInterstitialAd;
-    private Button btnLoad, btnShow, btnIap, btnLoadReward, btnShowReward;
+    private Button btnLoad, btnShow, btnIap, btnLoadReward, btnShowReward, btnTestOrganic, btnTestNonOrganic;
     private FrameLayout frAds;
+    private TextView tvTestResult;
 
     private ShimmerFrameLayout shimmerAds;
     private ApNativeAd mApNativeAd;
@@ -51,6 +53,9 @@ public class MainActivity extends AppCompatActivity {
         btnIap = findViewById(R.id.btnIap);
         btnLoadReward = findViewById(R.id.btnLoadReward);
         btnShowReward = findViewById(R.id.btnShowReward);
+        btnTestOrganic = findViewById(R.id.btnTestOrganic);
+        btnTestNonOrganic = findViewById(R.id.btnTestNonOrganic);
+        tvTestResult = findViewById(R.id.tvTestResult);
         frAds = findViewById(R.id.fr_ads);
 
         shimmerAds = findViewById(R.id.shimmer_native);
@@ -145,6 +150,42 @@ public class MainActivity extends AppCompatActivity {
             });
         });
 
+        // Test Organic User
+        btnTestOrganic.setOnClickListener(v -> {
+            Log.d("MainActivity", "=== TESTING ORGANIC USER ===");
+            Toast.makeText(this, "Testing Organic User", Toast.LENGTH_SHORT).show();
+            
+            // Simulate organic attribution
+            BBLAd.getInstance().simulateOrganicAttribution();
+            
+            // Update UI
+            updateTestResult("🌱 ORGANIC USER TEST\n" +
+                    "Status: User found app organically\n" +
+                    "isOrganicUser: " + BBLAd.isOrganicUser + "\n" +
+                    "Attribution: None\n" +
+                    "Time: " + new java.util.Date().toString());
+        });
+
+        // Test Non-Organic User
+        btnTestNonOrganic.setOnClickListener(v -> {
+            Log.d("MainActivity", "=== TESTING NON-ORGANIC USER ===");
+            Toast.makeText(this, "Testing Non-Organic User", Toast.LENGTH_SHORT).show();
+            
+            // Simulate non-organic attribution
+            BBLAd.getInstance().simulateNonOrganicAttribution();
+            
+            // Update UI
+            updateTestResult("📱 NON-ORGANIC USER TEST\n" +
+                    "Status: User from advertising campaign\n" +
+                    "isOrganicUser: " + BBLAd.isOrganicUser + "\n" +
+                    "Network: facebook\n" +
+                    "Campaign: test_campaign\n" +
+                    "Adgroup: test_adgroup\n" +
+                    "Creative: test_creative\n" +
+                    "TrackerToken: test_tracker_123\n" +
+                    "Time: " + new java.util.Date().toString());
+        });
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -231,6 +272,36 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.e("MainActivity", "❌ Failed to retrieve onboarding config");
         }
+    }
+
+    /**
+     * Update test result display
+     */
+    private void updateTestResult(String result) {
+        if (tvTestResult != null) {
+            tvTestResult.setText(result);
+        }
+    }
+
+    /**
+     * Update test result when real attribution comes from Adjust
+     */
+    public void updateAttributionResult(boolean isOrganic, String attributionData) {
+        String result;
+        if (isOrganic) {
+            result = "🌱 REAL ORGANIC USER\n" +
+                    "Status: User found app organically\n" +
+                    "isOrganicUser: " + isOrganic + "\n" +
+                    "Attribution: None\n" +
+                    "Time: " + new java.util.Date().toString();
+        } else {
+            result = "📱 REAL NON-ORGANIC USER\n" +
+                    "Status: User from advertising campaign\n" +
+                    "isOrganicUser: " + isOrganic + "\n" +
+                    attributionData + "\n" +
+                    "Time: " + new java.util.Date().toString();
+        }
+        updateTestResult(result);
     }
 
 
