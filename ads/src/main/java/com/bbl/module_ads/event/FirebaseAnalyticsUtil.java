@@ -25,6 +25,12 @@ public class FirebaseAnalyticsUtil {
         FirebaseAnalytics.getInstance(context).logEvent("event_user_click_ads", bundle);
     }
 
+
+    public static void logEvent(Context context, Bundle bundle) {
+
+        FirebaseAnalytics.getInstance(context).logEvent("isOrganic", bundle);
+    }
+
     public static void logCurrentTotalRevenueAd(Context context, String eventName, Bundle bundle) {
         FirebaseAnalytics.getInstance(context).logEvent(eventName, bundle);
     }

@@ -39,6 +39,7 @@ import com.bbl.module_ads.ads.wrapper.ApRewardAd;
 import com.bbl.module_ads.ads.wrapper.ApRewardItem;
 import com.bbl.module_ads.config.BBLAdConfig;
 import com.bbl.module_ads.event.BBLAdjust;
+import com.bbl.module_ads.event.BBLLogEventManager;
 import com.bbl.module_ads.funtion.AdCallback;
 import com.bbl.module_ads.funtion.AdType;
 import com.bbl.module_ads.funtion.RewardCallback;
@@ -226,10 +227,11 @@ public class BBLAd {
                 BBLAd.isOrganicUser = isOrganic;
 
                 if (isOrganic) {
+                    BBLLogEventManager.logIsOrganicEvent(adConfig.getApplication());
                     Log.d(TAG_ADJUST, "🌱 === USER IS ORGANIC ===");
                     Log.d(TAG_ADJUST, "🌱 No attribution data - user found app organically");
                     Log.d(TAG_ADJUST, "🌱 isOrganicUser = " + BBLAd.isOrganicUser);
-                    
+                    BBLLogEventManager.logIsOrganicEvent(adConfig.getApplication());
                     // Update UI if MainActivity is available
                     updateUIForOrganicUser();
                 } else {
@@ -259,6 +261,8 @@ public class BBLAd {
                             "TrackerToken: " + trackerToken + "\n" +
                             "TrackerName: " + trackerName;
                     updateUIForNonOrganicUser(attributionData);
+
+                    BBLLogEventManager.logIsCampEvent(adConfig.getApplication(),attributionData );
                 }
             }
         });

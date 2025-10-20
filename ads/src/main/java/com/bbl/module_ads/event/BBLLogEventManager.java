@@ -116,6 +116,24 @@ public class BBLLogEventManager {
         FacebookEventUtils.logClickAdsEvent(context, bundle);
     }
 
+
+    public static void logIsCampEvent(Context context, String attributionData) {
+
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("isCamp", true);
+        bundle.putString("campaignData", attributionData);
+
+        FirebaseAnalyticsUtil.logEvent(context, bundle);
+    }
+
+    public static void logIsOrganicEvent(Context context) {
+
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("isOrganic", true);
+
+        FirebaseAnalyticsUtil.logEvent(context, bundle);
+    }
+
     public static void trackingAdsClick(Context context, AdValue adValue) {
         float adsRev = adValue.getValueMicros() / 1_000_000f;
         String currencyCode = adValue.getCurrencyCode() != null ? adValue.getCurrencyCode() : "USD";
