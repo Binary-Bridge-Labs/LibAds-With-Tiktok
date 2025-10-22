@@ -5,12 +5,15 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Process;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -192,7 +195,7 @@ public class Admob {
         if (context == null) return null;
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningAppProcessInfo processInfo : manager.getRunningAppProcesses()) {
-            if (processInfo.pid == android.os.Process.myPid()) {
+            if (processInfo.pid == Process.myPid()) {
                 return processInfo.processName;
             }
         }
@@ -1824,26 +1827,24 @@ public class Admob {
         adView.setAdvertiserView(adView.findViewById(R.id.ad_advertiser));
 
         try {
-            adView.findViewById(R.id.close_ads).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    adView.setVisibility(View.GONE);
-                    if (nativeCallBack != null) {
-                        nativeCallBack.closeNativeAd();
-                    }
+            Handler handler = new Handler();
+            Runnable autoCloseRunnable = () -> {
+                View closeBtn = adView.findViewById(R.id.close_ads);
+                if (nativeCallBack != null && closeBtn.getVisibility() == View.VISIBLE) {
+                    closeBtn.performClick();
+                }
+            };
+
+            adView.findViewById(R.id.close_ads).setOnClickListener(v -> {
+                handler.removeCallbacks(autoCloseRunnable);
+                adView.setVisibility(View.GONE);
+                if (nativeCallBack != null) {
+                    nativeCallBack.closeNativeAd();
                 }
             });
 
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (nativeCallBack != null) {
-                        if (adView.findViewById(R.id.close_ads).getVisibility() == View.VISIBLE) {
-                            adView.findViewById(R.id.close_ads).performClick();
-                        }
-                    }
-                }
-            }, 5000);
+            handler.postDelayed(autoCloseRunnable, 5000);
+
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -1946,7 +1947,7 @@ public class Admob {
 
             // Set stroke color cho background (nếu có border)
             // Tạo GradientDrawable để set stroke
-            android.graphics.drawable.GradientDrawable drawable = new android.graphics.drawable.GradientDrawable();
+            GradientDrawable drawable = new GradientDrawable();
             drawable.setColor(Color.parseColor(nativeConfig.getBackgroundColor()));
             drawable.setStroke(1, Color.parseColor(nativeConfig.getStroke())); // 2dp stroke width
 //            drawable.setCornerRadius(8); // 8dp corner radius
@@ -1956,7 +1957,7 @@ public class Admob {
             Button cta = adView.findViewById(R.id.ad_call_to_action);
             if (cta != null) {
                 // Sử dụng setBackgroundTintList để set màu cho button
-                cta.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor(nativeConfig.getCtaColor())));
+                cta.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(nativeConfig.getCtaColor())));
 
                 // Hoặc có thể sử dụng setBackgroundColor
                 // cta.setBackgroundColor(Color.parseColor(nativeConfig.getCtaColor()));
