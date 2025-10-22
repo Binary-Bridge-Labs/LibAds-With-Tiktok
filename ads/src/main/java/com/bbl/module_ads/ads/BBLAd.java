@@ -226,7 +226,7 @@ public class BBLAd {
                 // Check organic dựa trên network field, KHÔNG phải trackerToken
                 boolean isOrganic = attribution.network == null ||
                         attribution.network.isEmpty() ||
-                        attribution.network.equalsIgnoreCase("Organic");
+                        attribution.trackerName.equalsIgnoreCase("Organic");
 
                 BBLAd.isOrganicUser = isOrganic;
 
