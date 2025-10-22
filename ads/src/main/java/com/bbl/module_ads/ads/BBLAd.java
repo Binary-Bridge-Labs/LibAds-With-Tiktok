@@ -223,20 +223,25 @@ public class BBLAd {
                 }
 
                 // Nếu trackerToken null/empty => organic user
-                boolean isOrganic = attribution.trackerToken == null || attribution.trackerToken.isEmpty();
+                // Check organic dựa trên network field, KHÔNG phải trackerToken
+                boolean isOrganic = attribution.network == null ||
+                        attribution.network.isEmpty() ||
+                        attribution.network.equalsIgnoreCase("Organic");
+
                 BBLAd.isOrganicUser = isOrganic;
 
                 if (isOrganic) {
                     BBLLogEventManager.logIsOrganicEvent(adConfig.getApplication());
                     Log.d(TAG_ADJUST, "🌱 === USER IS ORGANIC ===");
-                    Log.d(TAG_ADJUST, "🌱 No attribution data - user found app organically");
+                    Log.d(TAG_ADJUST, "🌱 Network: " + attribution.network);
+                    Log.d(TAG_ADJUST, "🌱 TrackerToken: " + attribution.trackerToken);
+                    Log.d(TAG_ADJUST, "🌱 TrackerName: " + attribution.trackerName);
                     Log.d(TAG_ADJUST, "🌱 isOrganicUser = " + BBLAd.isOrganicUser);
-                    BBLLogEventManager.logIsOrganicEvent(adConfig.getApplication());
-                    // Update UI if MainActivity is available
                     updateUIForOrganicUser();
-                } else {
-                    // Non-organic: đọc thông tin campaign
-                    String network = attribution.network;     // ví dụ: "facebook", "googleadwords_int"
+                }
+                else {
+                    // Non-organic user - có campaign data thật
+                    String network = attribution.network;
                     String campaign = attribution.campaign;
                     String adgroup = attribution.adgroup;
                     String creative = attribution.creative;
@@ -252,8 +257,7 @@ public class BBLAd {
                     Log.d(TAG_ADJUST, "📱   - TrackerToken: " + trackerToken);
                     Log.d(TAG_ADJUST, "📱   - TrackerName: " + trackerName);
                     Log.d(TAG_ADJUST, "📱 isOrganicUser = " + BBLAd.isOrganicUser);
-                    
-                    // Update UI with attribution data
+
                     String attributionData = "Network: " + network + "\n" +
                             "Campaign: " + campaign + "\n" +
                             "Adgroup: " + adgroup + "\n" +
@@ -261,9 +265,9 @@ public class BBLAd {
                             "TrackerToken: " + trackerToken + "\n" +
                             "TrackerName: " + trackerName;
                     updateUIForNonOrganicUser(attributionData);
-
-                    BBLLogEventManager.logIsCampEvent(adConfig.getApplication(),attributionData );
+                    BBLLogEventManager.logIsCampEvent(adConfig.getApplication(), attributionData);
                 }
+
             }
         });
 
