@@ -604,7 +604,7 @@ public class BBLAd {
         NativeConfig config = ConfigManager.getInstance(activity).getNativeConfig(name);
         Log.d(TAG, "loadNativeAd: " + config.getIdAds());
         String id = config.getIdAds();
-        if (BuildConfig.DEBUG) {
+        if (INSTANCE.adConfig.isVariantDev()) {
             id = "ca-app-pub-3940256099942544/2247696110";
         }
         Admob.getInstance().loadNativeAd(((Context) activity), id, new AdCallback() {

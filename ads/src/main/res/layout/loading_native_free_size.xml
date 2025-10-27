@@ -33,7 +33,7 @@
 
 
                 <ImageView
-                    android:id="@+id/native_ad_icon_load"
+                    android:id="@+id/ad_app_icon"
                     android:layout_width="35.0dip"
                     android:layout_height="35.0dip"
                     android:background="@color/lightTransparent"
@@ -44,7 +44,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dip"
                     android:layout_toLeftOf="@+id/ad_choices_container_load"
-                    android:layout_toRightOf="@+id/native_ad_icon_load"
+                    android:layout_toRightOf="@+id/ad_app_icon"
                     android:background="@color/lightTransparent"
                     android:clickable="false"
                     android:orientation="vertical"

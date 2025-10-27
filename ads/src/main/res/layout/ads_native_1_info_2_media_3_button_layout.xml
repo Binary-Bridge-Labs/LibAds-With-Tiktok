@@ -22,7 +22,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
-                android:id="@+id/native_ad_icon_load"
+                android:id="@+id/ad_app_icon"
                 android:layout_width="40dip"
                 android:layout_height="40dip"
                 android:adjustViewBounds="true" />

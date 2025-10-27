@@ -31,7 +31,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ad_call_to_action">
             <ImageView
-                android:id="@+id/native_ad_icon_load"
+                android:id="@+id/ad_app_icon"
                 android:layout_width="40dip"
                 android:layout_height="40dip"
                 android:adjustViewBounds="true" />
