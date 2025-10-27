@@ -74,6 +74,10 @@ public class ApNativeAd extends ApAdBase {
         return nativeConfig;
     }
 
+    public void setNativeConfig(NativeConfig nativeConfig) {
+        this.nativeConfig = nativeConfig;
+    }
+
     public View getNativeView() {
         return nativeView;
     }
