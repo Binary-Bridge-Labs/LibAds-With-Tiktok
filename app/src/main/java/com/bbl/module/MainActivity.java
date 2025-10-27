@@ -1,7 +1,6 @@
 package com.bbl.module;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -24,10 +23,7 @@ import com.bbl.module_ads.funtion.AdType;
 import com.bbl.module_ads.funtion.PurchaseListener;
 import com.bbl.module_ads.remote.ConfigManager;
 import com.facebook.shimmer.ShimmerFrameLayout;
-import com.google.android.gms.ads.AdInspectorError;
 import com.google.android.gms.ads.AdValue;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.OnAdInspectorClosedListener;
 
 public class MainActivity extends AppCompatActivity {
     private ApInterstitialAd mInterstitialAd;
@@ -186,19 +182,17 @@ public class MainActivity extends AppCompatActivity {
                     "Time: " + new java.util.Date().toString());
         });
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                BBLAd.getInstance().loadNativeAd(MainActivity.this, "native_ob_1", new AdCallback() {
+
+        BBLAd.getInstance().loadNativeAd(MainActivity.this, "native_ob_1", new AdCallback() {
 
                     @Override
                     public void onNativeAdLoaded(@NonNull ApNativeAd nativeAd) {
                         super.onNativeAdLoaded(nativeAd);
                         BBLAd.getInstance().populateNativeAdView(MainActivity.this, nativeAd, frAds, new AdCallback());
+
+                        Log.d("Chinh Chinh", "onNativeAdLoaded: " + nativeAd.getStatus());
                     }
                 });
-            }
-        }, 5000); // Delay 5 giây để đảm bảo Remote Config đã được tải
 
 
 //        MobileAds.openAdInspector(this, new OnAdInspectorClosedListener() {

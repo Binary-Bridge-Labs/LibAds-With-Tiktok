@@ -37,6 +37,7 @@ import com.bbl.module_ads.ads.wrapper.ApInterstitialPriorityAd;
 import com.bbl.module_ads.ads.wrapper.ApNativeAd;
 import com.bbl.module_ads.ads.wrapper.ApRewardAd;
 import com.bbl.module_ads.ads.wrapper.ApRewardItem;
+import com.bbl.module_ads.ads.wrapper.StatusAd;
 import com.bbl.module_ads.config.BBLAdConfig;
 import com.bbl.module_ads.event.BBLAdjust;
 import com.bbl.module_ads.event.BBLLogEventManager;
@@ -1053,6 +1054,7 @@ public class BBLAd {
         containerShimmerLoading.setVisibility(GONE);
         adPlaceHolder.setVisibility(View.VISIBLE);
         Admob.getInstance().populateUnifiedNativeAdView(apNativeAd.getAdmobNativeAd(), adView);
+        apNativeAd.setStatus(StatusAd.AD_RENDER_SUCCESS);
         adPlaceHolder.removeAllViews();
         adPlaceHolder.addView(adView);
     }
@@ -1068,6 +1070,7 @@ public class BBLAd {
         containerShimmerLoading.setVisibility(GONE);
         adPlaceHolder.setVisibility(View.VISIBLE);
         Admob.getInstance().populateUnifiedNativeAdView(apNativeAd.getAdmobNativeAd(), adView, callBack);
+        apNativeAd.setStatus(StatusAd.AD_RENDER_SUCCESS);
         adPlaceHolder.removeAllViews();
         adPlaceHolder.addView(adView);
     }
@@ -1083,6 +1086,7 @@ public class BBLAd {
         containerShimmerLoading.setVisibility(GONE);
         adPlaceHolder.setVisibility(View.VISIBLE);
         Admob.getInstance().populateUnifiedNativeAdView(apNativeAd.getAdmobNativeAd(), adView, callBack);
+        apNativeAd.setStatus(StatusAd.AD_RENDER_SUCCESS);
         adPlaceHolder.removeAllViews();
         adPlaceHolder.addView(adView);
     }
@@ -1102,6 +1106,7 @@ public class BBLAd {
         containerShimmerLoading.setVisibility(GONE);
         adPlaceHolder.setVisibility(View.VISIBLE);
         Admob.getInstance().populateUnifiedNativeAdView(apNativeAd, adView, callBack);
+        apNativeAd.setStatus(StatusAd.AD_RENDER_SUCCESS);
         adPlaceHolder.removeAllViews();
         adPlaceHolder.addView(adView);
     }
