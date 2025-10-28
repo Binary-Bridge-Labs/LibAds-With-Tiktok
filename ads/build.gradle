@@ -30,6 +30,13 @@ android {
     task androidJavadocs(type: Javadoc) {
         source = android.sourceSets.main.java.srcDirs
         classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+        
+        // Exclude non-Java files
+        exclude '**/billing/**'
+        options {
+            failOnError false
+            quiet()
+        }
     }
     
     task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {

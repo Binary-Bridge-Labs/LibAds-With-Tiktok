@@ -9,3 +9,5 @@
 .externalNativeBuild
 .cxx
 local.properties
+# Ignore JSON files in Java packages
+**/src/main/java/**/*.json

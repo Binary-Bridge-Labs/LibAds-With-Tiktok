@@ -36,7 +36,7 @@ jobs:
       run: chmod +x gradlew
     
     - name: Build with Gradle
-      run: ./gradlew :ads:build
+      run: ./gradlew :ads:build -x androidJavadocs
     
     - name: Publish to GitHub Packages
       run: ./gradlew :ads:publishReleasePublicationToGitHubPackagesRepository
