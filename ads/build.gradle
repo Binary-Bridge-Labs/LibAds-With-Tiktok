@@ -8,9 +8,8 @@ android {
         minSdkVersion 21
         targetSdkVersion 34
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
     }
-
 
     buildTypes {
         release {
@@ -25,6 +24,27 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    
+    // Task để tạo JavaDoc
+    task androidJavadocs(type: Javadoc) {
+        source = android.sourceSets.main.java.srcDirs
+        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    }
+    
+    task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
+        archiveClassifier.set('javadoc')
+        from androidJavadocs.destinationDir
+    }
+    
+    task androidSourcesJar(type: Jar) {
+        archiveClassifier.set('sources')
+        from android.sourceSets.main.java.srcDirs
+    }
+    
+    artifacts {
+        archives androidSourcesJar
+        archives androidJavadocsJar
     }
 }
 
@@ -81,9 +101,51 @@ afterEvaluate {
         publications {
             release(MavenPublication) {
                 from components.release
-                groupId = 'com.github.chinhvq'
+                
+                groupId = 'com.github.Binary-Bridge-Labs'
                 artifactId = 'LibAds-Tiktok'
                 version = '1.0.0'
+                
+                artifact(androidSourcesJar)
+                artifact(androidJavadocsJar)
+                
+                pom {
+                    name = 'LibAds-Tiktok'
+                    description = 'Android Ads Library with TikTok Ads Integration and Adjust SDK'
+                    url = 'https://github.com/Binary-Bridge-Labs/LibAds-With-Tiktok'
+                    
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                    
+                    developers {
+                        developer {
+                            id = 'chinhptit891'
+                            name = 'chinhptit891'
+                            email = 'chinhptit891@github.com'
+                        }
+                    }
+                    
+                    scm {
+                        connection = 'scm:git:https://github.com/Binary-Bridge-Labs/LibAds-With-Tiktok.git'
+                        developerConnection = 'scm:git:ssh://github.com/Binary-Bridge-Labs/LibAds-With-Tiktok.git'
+                        url = 'https://github.com/Binary-Bridge-Labs/LibAds-With-Tiktok'
+                    }
+                }
+            }
+        }
+        
+        repositories {
+            maven {
+                name = 'GitHubPackages'
+                url = 'https://maven.pkg.github.com/Binary-Bridge-Labs/LibAds-With-Tiktok'
+                credentials {
+                    username = System.getenv('GITHUB_USERNAME') ?: 'chinhptit891'
+                    password = System.getenv('GITHUB_TOKEN')
+                }
             }
         }
     }

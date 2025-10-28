@@ -1,22 +1,63 @@
-# BBL Studio
-- Admob
-- Mediation Admob (Facebook, Applovin, Vungle, Pangle, Mintegral)
-- Adjust
-- Firebase auto log tracking event, tROAS
-# Import Module
-~~~
-    maven { url "https://jitpack.io" }
+# BBL Studio - LibAds With Tiktok
+
+Android Ads Library with TikTok Ads Integration and Adjust SDK
+
+## Features
+- ✅ Admob Integration
+- ✅ Mediation Admob (Facebook, Applovin, Vungle, Pangle, Mintegral, Unity, IronSource)
+- ✅ Adjust SDK for Attribution
+- ✅ Firebase auto log tracking event, tROAS
+- ✅ Support Organic/Non-Organic user detection
+
+## Import Module
+
+### Option 1: Via JitPack (Recommended)
+~~~gradle
+allprojects {
+    repositories {
+        maven { url "https://jitpack.io" }
         maven {
             url 'https://artifact.bytedance.com/repository/pangle/'
         }
         maven {
             url 'https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea'
         }
-    implementation 'com.github.chinhvq:LibAds-With-Tiktok:$version'
+    }
+}
+
+dependencies {
+    implementation 'com.github.Binary-Bridge-Labs:LibAds-With-Tiktok:1.0.0'
     implementation 'com.google.android.play:core:1.10.3'
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
-    implementation 'com.google.android.gms:play-services-ads:21.4.0'
+    implementation 'com.google.android.gms:play-services-ads:23.2.0'
     implementation 'androidx.multidex:multidex:2.0.1'
+}
+~~~
+
+### Option 2: Via GitHub Packages
+~~~gradle
+allprojects {
+    repositories {
+        maven {
+            name = 'GitHubPackages'
+            url = uri('https://maven.pkg.github.com/Binary-Bridge-Labs/LibAds-With-Tiktok')
+            credentials {
+                username = 'your_github_username'
+                password = 'your_github_token'
+            }
+        }
+        maven {
+            url 'https://artifact.bytedance.com/repository/pangle/'
+        }
+        maven {
+            url 'https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea'
+        }
+    }
+}
+
+dependencies {
+    implementation 'com.github.Binary-Bridge-Labs:LibAds-Tiktok:1.0.0'
+}
 ~~~
 # Setup environment with id ads for project
 ~~~    
