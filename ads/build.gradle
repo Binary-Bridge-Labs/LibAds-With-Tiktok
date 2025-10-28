@@ -150,7 +150,7 @@ afterEvaluate {
                 name = 'GitHubPackages'
                 url = 'https://maven.pkg.github.com/Binary-Bridge-Labs/LibAds-With-Tiktok'
                 credentials {
-                    username = System.getenv('GITHUB_USERNAME') ?: 'chinhptit891'
+                    username = System.getenv('GITHUB_ACTOR') ?: 'Binary-Bridge-Labs'
                     password = System.getenv('GITHUB_TOKEN')
                 }
             }
