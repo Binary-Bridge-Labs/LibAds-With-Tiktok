@@ -220,44 +220,41 @@ public class BBLAd {
             public void onAttributionChanged(AdjustAttribution attribution) {
                 if (attribution == null) {
                     Log.d(TAG_ADJUST, "Adjust attribution is null");
+                    BBLAd.isOrganicUser = true;
                     return;
                 }
 
-                // Nếu trackerToken null/empty => organic user
-                // Check organic dựa trên network field, KHÔNG phải trackerToken
-                boolean isOrganic = attribution.network == null ||
-                        attribution.network.isEmpty() ||
-                        attribution.trackerName.equalsIgnoreCase("Organic") || attribution.trackerName.equalsIgnoreCase("organic");
+                String network = attribution.network;
+                String campaign = attribution.campaign;
+                String adgroup = attribution.adgroup;
+                String creative = attribution.creative;
+                String trackerToken = attribution.trackerToken;
+                String trackerName = attribution.trackerName;
 
+                Log.d(TAG_ADJUST, "=== USER IS NON-ORGANIC ===");
+                Log.d(TAG_ADJUST, "Attribution Data:");
+                Log.d(TAG_ADJUST, "  - Network: " + network);
+                Log.d(TAG_ADJUST, "  - Campaign: " + campaign);
+                Log.d(TAG_ADJUST, "  - Adgroup: " + adgroup);
+                Log.d(TAG_ADJUST, "  - Creative: " + creative);
+                Log.d(TAG_ADJUST, "  - TrackerToken: " + trackerToken);
+                Log.d(TAG_ADJUST, "  - TrackerName: " + trackerName);
+
+
+                boolean isOrganic =
+                        attribution.network == null ||
+                                attribution.network.equals("Organic") ||
+                                attribution.network.equals("organic") ||
+                                attribution.network.equalsIgnoreCase("unattributed") ||
+                                attribution.trackerName == null;
                 BBLAd.isOrganicUser = isOrganic;
 
                 if (isOrganic) {
-                    BBLLogEventManager.logIsOrganicEvent(adConfig.getApplication());
-                    Log.d(TAG_ADJUST, "🌱 === USER IS ORGANIC ===");
-                    Log.d(TAG_ADJUST, "🌱 Network: " + attribution.network);
-                    Log.d(TAG_ADJUST, "🌱 TrackerToken: " + attribution.trackerToken);
-                    Log.d(TAG_ADJUST, "🌱 TrackerName: " + attribution.trackerName);
-                    Log.d(TAG_ADJUST, "🌱 isOrganicUser = " + BBLAd.isOrganicUser);
+
                     updateUIForOrganicUser();
                 }
                 else {
                     // Non-organic user - có campaign data thật
-                    String network = attribution.network;
-                    String campaign = attribution.campaign;
-                    String adgroup = attribution.adgroup;
-                    String creative = attribution.creative;
-                    String trackerToken = attribution.trackerToken;
-                    String trackerName = attribution.trackerName;
-
-                    Log.d(TAG_ADJUST, "📱 === USER IS NON-ORGANIC ===");
-                    Log.d(TAG_ADJUST, "📱 Attribution Data:");
-                    Log.d(TAG_ADJUST, "📱   - Network: " + network);
-                    Log.d(TAG_ADJUST, "📱   - Campaign: " + campaign);
-                    Log.d(TAG_ADJUST, "📱   - Adgroup: " + adgroup);
-                    Log.d(TAG_ADJUST, "📱   - Creative: " + creative);
-                    Log.d(TAG_ADJUST, "📱   - TrackerToken: " + trackerToken);
-                    Log.d(TAG_ADJUST, "📱   - TrackerName: " + trackerName);
-                    Log.d(TAG_ADJUST, "📱 isOrganicUser = " + BBLAd.isOrganicUser);
 
                     String attributionData = "Network: " + network + "\n" +
                             "Campaign: " + campaign + "\n" +
