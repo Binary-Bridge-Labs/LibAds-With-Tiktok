@@ -47,6 +47,7 @@ import com.bbl.module_ads.funtion.RewardCallback;
 import com.bbl.module_ads.remote.ConfigManager;
 import com.bbl.module_ads.remote.NativeConfig;
 import com.bbl.module_ads.util.AppUtil;
+import com.bbl.module_ads.util.CheckValidateKeystore;
 import com.bbl.module_ads.util.SharePreferenceUtils;
 import com.facebook.FacebookSdk;
 import com.facebook.ads.AudienceNetworkAds;
@@ -224,47 +225,49 @@ public class BBLAd {
                     return;
                 }
 
-                String network = attribution.network;
-                String campaign = attribution.campaign;
-                String adgroup = attribution.adgroup;
-                String creative = attribution.creative;
-                String trackerToken = attribution.trackerToken;
-                String trackerName = attribution.trackerName;
-
-                Log.d(TAG_ADJUST, "=== USER IS NON-ORGANIC ===");
-                Log.d(TAG_ADJUST, "Attribution Data:");
-                Log.d(TAG_ADJUST, "  - Network: " + network);
-                Log.d(TAG_ADJUST, "  - Campaign: " + campaign);
-                Log.d(TAG_ADJUST, "  - Adgroup: " + adgroup);
-                Log.d(TAG_ADJUST, "  - Creative: " + creative);
-                Log.d(TAG_ADJUST, "  - TrackerToken: " + trackerToken);
-                Log.d(TAG_ADJUST, "  - TrackerName: " + trackerName);
-
-
-                boolean isOrganic =
-                        attribution.network == null ||
-                                attribution.network.equals("Organic") ||
-                                attribution.network.equals("organic") ||
-                                attribution.network.equalsIgnoreCase("unattributed") ||
-                                attribution.trackerName == null;
-                BBLAd.isOrganicUser = isOrganic;
-
-                if (isOrganic) {
-
-                    updateUIForOrganicUser();
-                }
-                else {
-                    // Non-organic user - có campaign data thật
-
-                    String attributionData = "Network: " + network + "\n" +
-                            "Campaign: " + campaign + "\n" +
-                            "Adgroup: " + adgroup + "\n" +
-                            "Creative: " + creative + "\n" +
-                            "TrackerToken: " + trackerToken + "\n" +
-                            "TrackerName: " + trackerName;
-                    updateUIForNonOrganicUser(attributionData);
-                    BBLLogEventManager.logIsCampEvent(adConfig.getApplication(), attributionData);
-                }
+//                String network = attribution.network;
+//                String campaign = attribution.campaign;
+//                String adgroup = attribution.adgroup;
+//                String creative = attribution.creative;
+//                String trackerToken = attribution.trackerToken;
+//                String trackerName = attribution.trackerName;
+//
+//                Log.d(TAG_ADJUST, "=== USER IS NON-ORGANIC ===");
+//                Log.d(TAG_ADJUST, "Attribution Data:");
+//                Log.d(TAG_ADJUST, "  - Network: " + network);
+//                Log.d(TAG_ADJUST, "  - Campaign: " + campaign);
+//                Log.d(TAG_ADJUST, "  - Adgroup: " + adgroup);
+//                Log.d(TAG_ADJUST, "  - Creative: " + creative);
+//                Log.d(TAG_ADJUST, "  - TrackerToken: " + trackerToken);
+//                Log.d(TAG_ADJUST, "  - TrackerName: " + trackerName);
+//
+//
+//                boolean isOrganic =
+//                        attribution.network == null ||
+//                                attribution.network.equals("Organic") ||
+//                                attribution.network.equals("organic") ||
+//                                attribution.network.equalsIgnoreCase("unattributed") ||
+//                                attribution.trackerName == null;
+//                BBLAd.isOrganicUser = isOrganic;
+//
+//                CheckValidateKeystore.checkValidateKeystore(adConfig.getApplication(), adConfig.getShaKeyStore());
+//
+//                if (isOrganic) {
+//
+//                    updateUIForOrganicUser();
+//                }
+//                else {
+//                    // Non-organic user - có campaign data thật
+//
+//                    String attributionData = "Network: " + network + "\n" +
+//                            "Campaign: " + campaign + "\n" +
+//                            "Adgroup: " + adgroup + "\n" +
+//                            "Creative: " + creative + "\n" +
+//                            "TrackerToken: " + trackerToken + "\n" +
+//                            "TrackerName: " + trackerName;
+//                    updateUIForNonOrganicUser(attributionData);
+//                    BBLLogEventManager.logIsCampEvent(adConfig.getApplication(), attributionData);
+//                }
 
             }
         });

@@ -37,6 +37,8 @@ public class BBLAdConfig {
 
     private String adjustTokenTiktok;
 
+    private String shaKeyStore;
+
     /**
      * intervalInterstitialAd: time between two interstitial ad impressions
      * unit: seconds
@@ -138,5 +140,13 @@ public class BBLAdConfig {
     public void setAdjustTokenTiktok(String adjustTokenTiktok) {
         ADJUST_TOKEN_TIKTOK = adjustTokenTiktok;
         this.adjustTokenTiktok = adjustTokenTiktok;
+    }
+
+    public void setShaKeyStore(String shaKeyStore) {
+        this.shaKeyStore = shaKeyStore;
+    }
+
+    public String getShaKeyStore() {
+        return shaKeyStore;
     }
 }

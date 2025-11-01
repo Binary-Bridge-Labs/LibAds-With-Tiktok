@@ -12,13 +12,13 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField "String", "KEYSTORE_SHA_256", '""'
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-        productFlavors {
-        }
-        buildTypes {
+            buildConfigField "String", "KEYSTORE_SHA_256", "\"${findProperty('RELEASE_KEYSTORE_SHA_256') ?: ''}\""
         }
     }
     compileOptions {
