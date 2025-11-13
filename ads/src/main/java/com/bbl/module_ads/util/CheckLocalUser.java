@@ -2,6 +2,7 @@ package com.bbl.module_ads.util;
 
 import android.os.Build;
 import android.os.LocaleList;
+import android.util.Log;
 
 import java.util.Locale;
 
@@ -58,6 +59,7 @@ public class CheckLocalUser {
      * Returns the current ISO country/region code (e.g., {@code "US"}, {@code "VN"}).
      */
     public static String getCurrentCountryCode() {
+        Log.d("country", "getCurrentCountryCode: " + getCurrentLocale().getCountry());
         return getCurrentLocale().getCountry();
     }
 
@@ -65,6 +67,8 @@ public class CheckLocalUser {
      * Checks whether the current locale corresponds to the United States.
      */
     public static boolean isCurrentUserFromUnitedStates() {
-        return "US".equalsIgnoreCase(getCurrentCountryCode());
+        String code = getCurrentCountryCode();
+        return "US".equalsIgnoreCase(code) || "GB".equalsIgnoreCase(code);
     }
+
 }
