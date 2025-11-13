@@ -79,4 +79,15 @@ public class SharePreferenceUtils {
         SharedPreferences pre = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         pre.edit().putLong(KEY_LAST_IMPRESSION_INTERSTITIAL_TIME, System.currentTimeMillis()).apply();
     }
+
+
+    public static void setUserFromUS(Context context, boolean isFromUS) {
+        SharedPreferences pre = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        pre.edit().putBoolean("KEY_IS_FROM_US", isFromUS).apply();
+    }
+
+    public static boolean getUserFromUS(Context context) {
+        SharedPreferences pre = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        return pre.getBoolean("KEY_IS_FROM_US", true);
+    }
 }

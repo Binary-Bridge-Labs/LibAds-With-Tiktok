@@ -1,6 +1,7 @@
 package com.bbl.module_ads.util;
 
 import android.app.Activity;
+import android.app.Application;
 import android.net.Uri;
 import android.os.RemoteException;
 import android.text.TextUtils;
@@ -21,7 +22,11 @@ public final class CheckOrganicUser {
         // Utility class
     }
 
-    public static void checkOrganicUser(Activity activity, Callback callback) {
+
+
+
+
+    public static void checkOrganicUser(Application activity, Callback callback) {
         Objects.requireNonNull(activity, "activity == null");
 
         final Callback safeCallback = callback != null ? callback : Callback.EMPTY;
@@ -133,6 +138,36 @@ public final class CheckOrganicUser {
     private static boolean isOrganicSource(String source) {
         return "google-play".equals(source) || "google play".equals(source) || isOrganicValue(source);
     }
+    public static  void checkIsOrganicUserSimple(
+            Application activity,
+            OrganicUserCallback callback
+    ) {
+
+        final OrganicUserCallback safeCallback = callback != null ? callback : OrganicUserCallback.EMPTY;
+
+        checkOrganicUser(activity, new Callback() {
+            @Override
+            public void onResult(boolean isOrganic, String referrerUrl, Map<String, String> parameters) {
+                if (isOrganic) {
+                    safeCallback.onOrganicUserResult(true, "Install referrer indicates organic: " + referrerUrl);
+                } else {
+                    safeCallback.onOrganicUserResult(false, "Install referrer indicates non-organic: " + referrerUrl);
+                }
+            }
+
+            @Override
+            public void onError(String message) {
+                // On error, assume not organic for safety
+                safeCallback.onOrganicUserResult(false, "Install referrer check error: " + message);
+            }
+
+            @Override
+            public void onServiceDisconnected() {
+                // On disconnect, assume not organic for safety
+                safeCallback.onOrganicUserResult(false, "Install referrer service disconnected");
+            }
+        });
+    }
 
     public static void checkIsOrganicUser(
             Activity activity,
@@ -163,35 +198,14 @@ public final class CheckOrganicUser {
         }
 
         // If keystore is valid, check install referrer
-        checkOrganicUser(activity, new Callback() {
-            @Override
-            public void onResult(boolean isOrganic, String referrerUrl, Map<String, String> parameters) {
-                if (isOrganic) {
-                    safeCallback.onOrganicUserResult(true, "Install referrer indicates organic: " + referrerUrl);
-                } else {
-                    safeCallback.onOrganicUserResult(false, "Install referrer indicates non-organic: " + referrerUrl);
-                }
-            }
 
-            @Override
-            public void onError(String message) {
-                // On error, assume not organic for safety
-                safeCallback.onOrganicUserResult(false, "Install referrer check error: " + message);
-            }
-
-            @Override
-            public void onServiceDisconnected() {
-                // On disconnect, assume not organic for safety
-                safeCallback.onOrganicUserResult(false, "Install referrer service disconnected");
-            }
-        });
     }
 
     public interface OrganicUserCallback {
         OrganicUserCallback EMPTY = new OrganicUserCallback() {
             @Override
             public void onOrganicUserResult(boolean isOrganicUser, String reason) {
-                // no-op
+
             }
         };
 

@@ -23,6 +23,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent">
 
+        <include layout="@layout/shimmer_native_large" />
+
     </FrameLayout>
 
     <Button

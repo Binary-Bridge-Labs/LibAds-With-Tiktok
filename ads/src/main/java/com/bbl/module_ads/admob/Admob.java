@@ -45,7 +45,9 @@ import com.bbl.module_ads.funtion.AdType;
 import com.bbl.module_ads.funtion.AdmobHelper;
 import com.bbl.module_ads.funtion.RewardCallback;
 import com.bbl.module_ads.remote.NativeConfig;
+import com.bbl.module_ads.util.AppUtil;
 import com.bbl.module_ads.util.SharePreferenceUtils;
+import com.bbl.module_ads.util.VerifyAdsTest;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdError;
@@ -1727,6 +1729,17 @@ public class Admob {
         adView.setAdvertiserView(adView.findViewById(R.id.ad_advertiser));
 
         try {
+            if (!AppUtil.VARIANT_DEV &&  VerifyAdsTest.isTestAd(nativeAd.getHeadline())) {
+                adView.removeAllViews();
+                return;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+
+
+        try {
             adView.findViewById(R.id.close_ads).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -1825,6 +1838,16 @@ public class Admob {
         adView.setPriceView(adView.findViewById(R.id.ad_price));
         adView.setStarRatingView(adView.findViewById(R.id.ad_stars));
         adView.setAdvertiserView(adView.findViewById(R.id.ad_advertiser));
+
+        try {
+            if (!AppUtil.VARIANT_DEV &&  VerifyAdsTest.isTestAd(nativeAd.getHeadline())) {
+                adView.removeAllViews();
+                return;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
 
         try {
             Handler handler = new Handler();
@@ -1937,7 +1960,15 @@ public class Admob {
         adView.setPriceView(adView.findViewById(R.id.ad_price));
         adView.setStarRatingView(adView.findViewById(R.id.ad_stars));
         adView.setAdvertiserView(adView.findViewById(R.id.ad_advertiser));
+        try {
+            if (!AppUtil.VARIANT_DEV &&  VerifyAdsTest.isTestAd(nativeAd.getHeadline())) {
+                adView.removeAllViews();
+                return;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
 
+        }
 
         try {
             // Set background color cho ad container
@@ -2069,6 +2100,15 @@ public class Admob {
         adView.setAdvertiserView(adView.findViewById(R.id.ad_advertiser));
 
 
+        try {
+            if (!AppUtil.VARIANT_DEV &&  VerifyAdsTest.isTestAd(nativeAd.getHeadline())) {
+                adView.removeAllViews();
+                return;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
         try {
        View bg = adView.findViewById(R.id.ad_unit_content);
 

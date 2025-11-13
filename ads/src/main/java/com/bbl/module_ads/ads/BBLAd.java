@@ -29,7 +29,6 @@ import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
-import com.bbl.module_ads.BuildConfig;
 import com.bbl.module_ads.admob.Admob;
 import com.bbl.module_ads.admob.AppOpenManager;
 import com.bbl.module_ads.ads.wrapper.ApInterstitialAd;
@@ -40,14 +39,14 @@ import com.bbl.module_ads.ads.wrapper.ApRewardItem;
 import com.bbl.module_ads.ads.wrapper.StatusAd;
 import com.bbl.module_ads.config.BBLAdConfig;
 import com.bbl.module_ads.event.BBLAdjust;
-import com.bbl.module_ads.event.BBLLogEventManager;
 import com.bbl.module_ads.funtion.AdCallback;
 import com.bbl.module_ads.funtion.AdType;
 import com.bbl.module_ads.funtion.RewardCallback;
 import com.bbl.module_ads.remote.ConfigManager;
 import com.bbl.module_ads.remote.NativeConfig;
 import com.bbl.module_ads.util.AppUtil;
-import com.bbl.module_ads.util.CheckValidateKeystore;
+import com.bbl.module_ads.util.CheckLocalUser;
+import com.bbl.module_ads.util.CheckOrganicUser;
 import com.bbl.module_ads.util.SharePreferenceUtils;
 import com.facebook.FacebookSdk;
 import com.facebook.ads.AudienceNetworkAds;
@@ -110,6 +109,22 @@ public class BBLAd {
         FacebookSdk.setClientToken(adConfig.getFacebookClientToken());
         AudienceNetworkAds.initialize(context);
         FacebookSdk.sdkInitialize(context);
+        checkOrganicAttribution(context);
+        checkuserFromUs(context);
+    }
+
+    private void checkuserFromUs(Application context) {
+       SharePreferenceUtils.setUserFromUS(context, CheckLocalUser.isCurrentUserFromUnitedStates());
+    }
+
+    private void checkOrganicAttribution(Application context) {
+        CheckOrganicUser.checkIsOrganicUserSimple(context, new CheckOrganicUser.OrganicUserCallback() {
+            @Override
+            public void onOrganicUserResult(boolean isOrganicUser, String reason) {
+                BBLAd.isOrganicUser = isOrganicUser;
+                Log.d(TAG_ADJUST, "Attribution check complete. isOrganicUser = " + isOrganicUser + ", reason: " + reason);
+            }
+        });
     }
 
     public void setInitCallback(BBLInitCallback initCallback) {
@@ -117,96 +132,6 @@ public class BBLAd {
         if (initAdSuccess) initCallback.initAdSuccess();
     }
 
-    /**
-     * Debug method để test non-organic attribution
-     * Chỉ sử dụng trong debug mode
-     */
-    public void simulateNonOrganicAttribution() {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG_ADJUST, "🧪 === SIMULATING NON-ORGANIC ATTRIBUTION ===");
-            
-            // Tạo fake attribution data
-            AdjustAttribution fakeAttribution = new AdjustAttribution();
-            fakeAttribution.trackerToken = "test_tracker_123";
-            fakeAttribution.trackerName = "test_tracker";
-            fakeAttribution.network = "facebook";
-            fakeAttribution.campaign = "test_campaign";
-            fakeAttribution.adgroup = "test_adgroup";
-            fakeAttribution.creative = "test_creative";
-            
-            // Trigger attribution callback
-            boolean isOrganic = fakeAttribution.trackerToken == null || fakeAttribution.trackerToken.isEmpty();
-            BBLAd.isOrganicUser = isOrganic;
-            
-            Log.d(TAG_ADJUST, "📱 === SIMULATED NON-ORGANIC USER ===");
-            Log.d(TAG_ADJUST, "📱 Attribution Data:");
-            Log.d(TAG_ADJUST, "📱   - Network: " + fakeAttribution.network);
-            Log.d(TAG_ADJUST, "📱   - Campaign: " + fakeAttribution.campaign);
-            Log.d(TAG_ADJUST, "📱   - Adgroup: " + fakeAttribution.adgroup);
-            Log.d(TAG_ADJUST, "📱   - Creative: " + fakeAttribution.creative);
-            Log.d(TAG_ADJUST, "📱   - TrackerToken: " + fakeAttribution.trackerToken);
-            Log.d(TAG_ADJUST, "📱   - TrackerName: " + fakeAttribution.trackerName);
-            Log.d(TAG_ADJUST, "📱 isOrganicUser = " + BBLAd.isOrganicUser);
-        }
-    }
-
-    /**
-     * Debug method để test organic attribution
-     */
-    public void simulateOrganicAttribution() {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG_ADJUST, "🧪 === SIMULATING ORGANIC ATTRIBUTION ===");
-            
-            // Set organic user
-            BBLAd.isOrganicUser = true;
-            
-            Log.d(TAG_ADJUST, "🌱 === SIMULATED ORGANIC USER ===");
-            Log.d(TAG_ADJUST, "🌱 No attribution data - user found app organically");
-            Log.d(TAG_ADJUST, "🌱 isOrganicUser = " + BBLAd.isOrganicUser);
-        }
-    }
-
-    /**
-     * Update UI for organic user
-     */
-    private void updateUIForOrganicUser() {
-        try {
-            // Try to get MainActivity instance and update UI
-            Class<?> mainActivityClass = Class.forName("com.bbl.module.MainActivity");
-            Object mainActivity = getCurrentActivity();
-            if (mainActivity != null && mainActivityClass.isInstance(mainActivity)) {
-                java.lang.reflect.Method method = mainActivityClass.getMethod("updateAttributionResult", boolean.class, String.class);
-                method.invoke(mainActivity, true, "");
-            }
-        } catch (Exception e) {
-            Log.d(TAG_ADJUST, "Could not update UI: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Update UI for non-organic user
-     */
-    private void updateUIForNonOrganicUser(String attributionData) {
-        try {
-            // Try to get MainActivity instance and update UI
-            Class<?> mainActivityClass = Class.forName("com.bbl.module.MainActivity");
-            Object mainActivity = getCurrentActivity();
-            if (mainActivity != null && mainActivityClass.isInstance(mainActivity)) {
-                java.lang.reflect.Method method = mainActivityClass.getMethod("updateAttributionResult", boolean.class, String.class);
-                method.invoke(mainActivity, false, attributionData);
-            }
-        } catch (Exception e) {
-            Log.d(TAG_ADJUST, "Could not update UI: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Get current activity (simplified version)
-     */
-    private Object getCurrentActivity() {
-        // This is a simplified approach - in real implementation you might want to use ActivityLifecycleCallbacks
-        return null; // For now, return null - UI update will be handled by simulation methods
-    }
 
     private void setupAdjust(Boolean buildDebug, String adjustToken) {
         String environment = buildDebug ? AdjustConfig.ENVIRONMENT_SANDBOX : AdjustConfig.ENVIRONMENT_PRODUCTION;
@@ -222,52 +147,8 @@ public class BBLAd {
                 if (attribution == null) {
                     Log.d(TAG_ADJUST, "Adjust attribution is null");
                     BBLAd.isOrganicUser = true;
-                    return;
                 }
 
-//                String network = attribution.network;
-//                String campaign = attribution.campaign;
-//                String adgroup = attribution.adgroup;
-//                String creative = attribution.creative;
-//                String trackerToken = attribution.trackerToken;
-//                String trackerName = attribution.trackerName;
-//
-//                Log.d(TAG_ADJUST, "=== USER IS NON-ORGANIC ===");
-//                Log.d(TAG_ADJUST, "Attribution Data:");
-//                Log.d(TAG_ADJUST, "  - Network: " + network);
-//                Log.d(TAG_ADJUST, "  - Campaign: " + campaign);
-//                Log.d(TAG_ADJUST, "  - Adgroup: " + adgroup);
-//                Log.d(TAG_ADJUST, "  - Creative: " + creative);
-//                Log.d(TAG_ADJUST, "  - TrackerToken: " + trackerToken);
-//                Log.d(TAG_ADJUST, "  - TrackerName: " + trackerName);
-//
-//
-//                boolean isOrganic =
-//                        attribution.network == null ||
-//                                attribution.network.equals("Organic") ||
-//                                attribution.network.equals("organic") ||
-//                                attribution.network.equalsIgnoreCase("unattributed") ||
-//                                attribution.trackerName == null;
-//                BBLAd.isOrganicUser = isOrganic;
-//
-//                CheckValidateKeystore.checkValidateKeystore(adConfig.getApplication(), adConfig.getShaKeyStore());
-//
-//                if (isOrganic) {
-//
-//                    updateUIForOrganicUser();
-//                }
-//                else {
-//                    // Non-organic user - có campaign data thật
-//
-//                    String attributionData = "Network: " + network + "\n" +
-//                            "Campaign: " + campaign + "\n" +
-//                            "Adgroup: " + adgroup + "\n" +
-//                            "Creative: " + creative + "\n" +
-//                            "TrackerToken: " + trackerToken + "\n" +
-//                            "TrackerName: " + trackerName;
-//                    updateUIForNonOrganicUser(attributionData);
-//                    BBLLogEventManager.logIsCampEvent(adConfig.getApplication(), attributionData);
-//                }
 
             }
         });

@@ -146,60 +146,10 @@ public class MainActivity extends AppCompatActivity {
             });
         });
 
-        // Test Organic User
-        btnTestOrganic.setOnClickListener(v -> {
-            Log.d("MainActivity", "=== TESTING ORGANIC USER ===");
-            Toast.makeText(this, "Testing Organic User", Toast.LENGTH_SHORT).show();
-            
-            // Simulate organic attribution
-            BBLAd.getInstance().simulateOrganicAttribution();
-            
-            // Update UI
-            updateTestResult("🌱 ORGANIC USER TEST\n" +
-                    "Status: User found app organically\n" +
-                    "isOrganicUser: " + BBLAd.isOrganicUser + "\n" +
-                    "Attribution: None\n" +
-                    "Time: " + new java.util.Date().toString());
+        BBLAd.getInstance().loadNativeAndShow(this, BuildConfig.ad_native, R.layout.custom_native_admob_free_size,frAds, shimmerAds, new AdCallback() {
+
         });
 
-        // Test Non-Organic User
-        btnTestNonOrganic.setOnClickListener(v -> {
-            Log.d("MainActivity", "=== TESTING NON-ORGANIC USER ===");
-            Toast.makeText(this, "Testing Non-Organic User", Toast.LENGTH_SHORT).show();
-            
-            // Simulate non-organic attribution
-            BBLAd.getInstance().simulateNonOrganicAttribution();
-            
-            // Update UI
-            updateTestResult("📱 NON-ORGANIC USER TEST\n" +
-                    "Status: User from advertising campaign\n" +
-                    "isOrganicUser: " + BBLAd.isOrganicUser + "\n" +
-                    "Network: facebook\n" +
-                    "Campaign: test_campaign\n" +
-                    "Adgroup: test_adgroup\n" +
-                    "Creative: test_creative\n" +
-                    "TrackerToken: test_tracker_123\n" +
-                    "Time: " + new java.util.Date().toString());
-        });
-
-
-        BBLAd.getInstance().loadNativeAd(MainActivity.this, "native_ob_1", new AdCallback() {
-
-                    @Override
-                    public void onNativeAdLoaded(@NonNull ApNativeAd nativeAd) {
-                        super.onNativeAdLoaded(nativeAd);
-                        BBLAd.getInstance().populateNativeAdView(MainActivity.this, nativeAd, frAds, new AdCallback());
-
-                        Log.d("Chinh Chinh", "onNativeAdLoaded: " + nativeAd.getStatus());
-                    }
-                });
-
-
-//        MobileAds.openAdInspector(this, new OnAdInspectorClosedListener() {
-//            public void onAdInspectorClosed(@Nullable AdInspectorError error) {
-//
-//            }
-//        });
     }
 
     /**
